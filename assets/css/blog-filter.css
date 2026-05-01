@@ -1,0 +1,95 @@
+/* RoboLens — blog filter bar styles.
+ * Uses MkDocs Material CSS custom properties for full theme compatibility
+ * (works in both light and dark / slate modes).
+ */
+
+#rl-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.6rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--md-code-bg-color);
+  border-radius: 0.35rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Search input wrapper */
+.rl-search-wrap {
+  position: relative;
+  flex: 1 1 180px;
+  display: flex;
+  align-items: center;
+}
+
+.rl-search-icon {
+  position: absolute;
+  left: 0.55rem;
+  width: 1rem;
+  height: 1rem;
+  fill: var(--md-default-fg-color--light);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+#rl-search {
+  width: 100%;
+  padding: 0.38rem 0.6rem 0.38rem 2rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font-family: var(--md-text-font-family);
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#rl-search:focus {
+  border-color: var(--md-accent-fg-color);
+}
+
+/* Hide the browser's native ✕ clear button — we rely on the placeholder */
+#rl-search::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* Year dropdown */
+#rl-year {
+  padding: 0.38rem 0.6rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font-family: var(--md-text-font-family);
+  font-size: 0.82rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#rl-year:focus {
+  border-color: var(--md-accent-fg-color);
+}
+
+/* Result count badge */
+.rl-count {
+  font-size: 0.76rem;
+  color: var(--md-default-fg-color--light);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* Responsive: stack on narrow screens */
+@media (max-width: 480px) {
+  #rl-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rl-count {
+    margin-left: 0;
+    text-align: right;
+  }
+}
