@@ -97,6 +97,8 @@ Two primary limitations were identified. First, the object 6D pose estimation re
 
 ## Citation
 
+**Paper:** [2604.28197](https://arxiv.org/abs/2604.28197)
+
 ```bibtex
 @article{260428197,
   title   = {OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction},

@@ -84,6 +84,8 @@ The current formulation is constrained by its input modality, relying exclusivel
 
 ## Citation
 
+**Paper:** [2604.28196](https://arxiv.org/abs/2604.28196)
+
 ```bibtex
 @article{260428196,
   title   = {HERMES++: Toward a Unified Driving World Model for 3D Scene Understanding and Generation},

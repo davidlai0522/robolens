@@ -81,6 +81,8 @@ Two primary limitations warrant discussion. First, there is a possibility that t
 
 ## Citation
 
+**Paper:** [2310.12931](https://arxiv.org/abs/2310.12931)
+
 ```bibtex
 @article{231012931,
   title   = {Eureka: Human-Level Reward Design via Coding Large Language Models},

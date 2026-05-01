@@ -2,6 +2,7 @@
 import datetime
 import json
 import re
+from config import cfg
 from llm import ask
 
 # ── Tag / category helpers ───────────────────────────────────────────────────
@@ -124,7 +125,7 @@ def build_blog_post(
         for f in figures
     )
 
-    prompt = f"""You are writing for RoboLens, a technical blog for robotics and AI engineers.
+    prompt = f"""You are writing for {cfg.author.blog_name}, a technical blog for {cfg.author.audience}.
 Tone: precise, clear, never dumbed-down. Write like a good PhD advisor explaining
 to a sharp master's student. Avoid hype. Every claim must follow from the outline.
 
@@ -138,13 +139,13 @@ Citation section. Follow this exact section order:
 [Add ### subsections per architecture_component]
 ## Results
 [Include a Markdown table from key_results — numbers verbatim from the outline]
-## Why This Matters for Robotics
+## Why This Matters
 ## Limitations & Open Questions
 
 Hard rules:
 - All numbers must exactly match those in key_results
 - Component names must be verbatim from architecture_components
-- Maximum 1800 words
+- Maximum {cfg.author.max_words} words
 - Do not add any references or footnotes
 
 Outline:
@@ -185,11 +186,14 @@ description: >
 
     arxiv_url = paper.get("arxiv_url", "")
     paper_id_safe = paper["id"].replace(".", "")
+    paper_link = f"**Paper:** [{paper['id']}]({arxiv_url})" if arxiv_url else ""
     citation = f"""
 
 ---
 
 ## Citation
+
+{paper_link}
 
 ```bibtex
 @article{{{paper_id_safe},
