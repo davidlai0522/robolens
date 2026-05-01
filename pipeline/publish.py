@@ -56,11 +56,11 @@ def publish(paper: dict, post_content: str):
 
 
 def publish_digest(content: str) -> None:
-    """Write the weekly digest post to docs/posts/ and push to GitHub."""
+    """Write the weekly digest post to docs/digest/posts/ and push to GitHub."""
     today = datetime.date.today()
     week_num = today.strftime("%W")
     filename = f"{today.isoformat()}-weekly-digest-week-{week_num}.md"
-    dest = pathlib.Path("docs/posts") / filename
+    dest = pathlib.Path("docs/digest/posts") / filename
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists():

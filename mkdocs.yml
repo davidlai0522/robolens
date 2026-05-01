@@ -33,6 +33,15 @@ plugins:
       categories: true
       categories_name: Categories
       categories_url_format: "category/{slug}"
+  - blog:
+      blog_dir: digest
+      post_date_format: long
+      post_url_format: "{slug}"
+      archive: true
+      archive_name: Archive
+      archive_date_format: "MMMM yyyy"
+      archive_url_format: "archive/{date}"
+      categories: false
   - tags:
       tags_file: tags.md
 
