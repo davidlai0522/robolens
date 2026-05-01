@@ -114,16 +114,34 @@ def build_blog_post(
 ) -> str:
     """Author a full Markdown blog post using Gemma 4."""
 
-    # Build figure Markdown blocks from real extracted images
-    figure_md = "\n\n".join(
-        (
-            f'![{f["caption"] or "Figure from paper"}]({f["path"]})\n'
-            f'*{f["caption"]}*'
-            if f["caption"]
-            else f'![Figure from paper]({f["path"]})'
+    # ── Figure Markdown blocks ────────────────────────────────────────────────
+    # Priority for alt text: vision description > PDF caption > generic fallback
+    # Priority for visible caption: PDF caption > vision description
+    def _fig_block(f: dict) -> str:
+        description = f.get("description", "")
+        caption = f.get("caption", "")
+        alt = description or caption or "Figure from paper"
+        visible = caption or description
+        if visible:
+            return f'![{alt}]({f["path"]})\n*{visible}*'
+        return f'![{alt}]({f["path"]})'
+
+    figure_md = "\n\n".join(_fig_block(f) for f in figures)
+
+    # ── Figure context for the LLM prompt ────────────────────────────────────
+    # If vision descriptions are available, inject them so the model can write
+    # accurate prose referencing each figure's actual content.
+    figures_context = ""
+    described = [f for f in figures if f.get("description")]
+    if described:
+        lines = []
+        for i, f in enumerate(described):
+            fname = f.get("caption") or f.get("path", f"Figure {i+1}")
+            lines.append(f"Figure {i+1} ({fname[:60]}): {f['description']}")
+        figures_context = (
+            "\n\nFigure context (from vision analysis — reference these accurately):\n"
+            + "\n".join(lines)
         )
-        for f in figures
-    )
 
     prompt = f"""You are writing for {cfg.author.blog_name}, a technical blog for {cfg.author.audience}.
 Tone: precise, clear, never dumbed-down. Write like a good PhD advisor explaining
@@ -149,7 +167,7 @@ Hard rules:
 - Do not add any references or footnotes
 
 Outline:
-{json.dumps(extraction, indent=2)}"""
+{json.dumps(extraction, indent=2)}{figures_context}"""
 
     prose = ask(prompt, tokenizer, model, temperature=0.3, max_new_tokens=3000)
 

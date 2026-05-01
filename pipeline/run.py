@@ -7,6 +7,7 @@ Usage:
   python pipeline/run.py --arxiv 2504.01234 --quantise  # 4-bit for low VRAM
   python pipeline/run.py --daily                        # auto-pick today's best paper
   python pipeline/run.py --daily --quantise             # daily + low VRAM
+  python pipeline/run.py --arxiv 2504.01234 --no-vision # skip figure descriptions
 """
 import argparse
 import sys
@@ -18,12 +19,14 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from quality import check_quality
 from ingest import ingest_arxiv, ingest_pdf
 from figures import extract_figures, select_blog_figures
+from vision import describe_figures
 from extract import extract_key_ideas
 from diagram import maybe_generate_mermaid
 from author import build_blog_post
 from publish import publish
 from llm import load_model
 from daily import pick_daily_paper, mark_processed
+from config import cfg
 
 
 def main():
@@ -44,6 +47,11 @@ def main():
         "--quantise",
         action="store_true",
         help="Load model in 4-bit (for low VRAM / CPU)",
+    )
+    parser.add_argument(
+        "--no-vision",
+        action="store_true",
+        help="Skip vision figure descriptions (overrides config.yaml vision.enabled)",
     )
     args = parser.parse_args()
 
@@ -74,17 +82,27 @@ def main():
     print("\n📄 Step 1/5 — Ingesting paper...")
     paper = ingest_arxiv(args.arxiv) if args.arxiv else ingest_pdf(args.pdf)
 
-    print("🖼️  Step 2/5 — Extracting figures from PDF...")
+    print("🖼️  Step 2/6 — Extracting figures from PDF...")
     all_figs = extract_figures(paper["id"], paper["pdf_path"])
     figures = select_blog_figures(all_figs)
 
-    print("🧠 Step 3/5 — Extracting key ideas...")
+    use_vision = cfg.vision.enabled and not getattr(args, "no_vision", False)
+    if use_vision and figures:
+        print("👁️  Step 3/6 — Vision: describing figures...")
+        figures = describe_figures(paper["id"], figures, tokenizer, model)
+    else:
+        reason = "disabled in config" if not cfg.vision.enabled else (
+            "--no-vision flag" if getattr(args, "no_vision", False) else "no figures"
+        )
+        print(f"👁️  Step 3/6 — Vision: skipped ({reason})")
+
+    print("🧠 Step 4/6 — Extracting key ideas...")
     extraction = extract_key_ideas(paper, tokenizer, model)
 
-    print("📐 Step 4/5 — Diagram check...")
+    print("📐 Step 5/6 — Diagram check...")
     mermaid = maybe_generate_mermaid(extraction, figures, tokenizer, model)
 
-    print("✍️  Step 5/5 — Authoring blog post...")
+    print("✍️  Step 6/6 — Authoring blog post...")
     post = build_blog_post(paper, extraction, figures, mermaid, tokenizer, model)
 
     print("🚀 Publishing...")
