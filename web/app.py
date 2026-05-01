@@ -2,9 +2,16 @@
 """
 RoboLens v1.0 — Local Web UI
 
-Launch:
-  uv run uvicorn web.app:app --port 7860
-  → http://localhost:7860
+Launch on the server:
+  uv run uvicorn web.app:app --host 0.0.0.0 --port 7860
+
+Then open in your local browser one of:
+  A) Direct (server on LAN / VPN):
+       http://<server-ip>:7860
+
+  B) SSH tunnel (server only reachable via SSH):
+       ssh -L 7860:localhost:7860 user@server
+     Then open: http://localhost:7860
 """
 import asyncio
 import pathlib
@@ -177,4 +184,4 @@ async def index():
 
 
 if __name__ == "__main__":
-    uvicorn.run("web.app:app", host="127.0.0.1", port=7860, reload=False)
+    uvicorn.run("web.app:app", host="0.0.0.0", port=7860, reload=False)
