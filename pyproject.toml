@@ -1,5 +1,5 @@
 [project]
-name = "robolens"
+name = "jarvisforresearchers"
 version = "0.1.0"
 description = "LLM-powered robotics & AI research blogger using Gemma 4 locally"
 readme = "README.md"

@@ -1,5 +1,5 @@
 authors:
-  RoboLens Bot:
-    name: RoboLens Bot
+  JarvisForResearchers Bot:
+    name: JarvisForResearchers Bot
     description: Automated AI research blogger powered by Gemma 4
-    avatar: https://api.dicebear.com/9.x/bottts/svg?seed=robolens
+    avatar: https://api.dicebear.com/9.x/bottts/svg?seed=jarvisforresearchers

@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# RoboLens — User Configuration
+# JarvisForResearchers — User Configuration
 #
 # Edit this file to personalise your blog.  No Python knowledge required.
 # After changing anything here, run:
@@ -15,7 +15,7 @@
 # ── Blog identity ─────────────────────────────────────────────────────────────
 blog:
   # Name shown in the site header and browser tab
-  name: "RoboLens"
+  name: "JarvisForResearchers"
 
   # One-sentence tagline shown on the home page
   description: "High-quality robotics & AI research — explained locally with Gemma 4"
@@ -24,7 +24,7 @@ blog:
   github_username: "davidlai0522"
 
   # The GitHub repository name you created for this blog
-  github_repo: "robolens"
+  github_repo: "jarvisforresearchers"
   # → Your posts will go live at:
   #   https://<github_username>.github.io/<github_repo>/
 
@@ -116,7 +116,7 @@ discovery:
 author:
   # The blog's name as it appears in the LLM authoring prompt.
   # Change this if you rename your blog.
-  blog_name: "RoboLens"
+  blog_name: "JarvisForResearchers"
 
   # Who is reading this blog?  The LLM uses this to calibrate tone and depth.
   # Examples:

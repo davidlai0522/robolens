@@ -1,8 +1,8 @@
-# RoboLens — Local LLM Blog Pipeline
+# JarvisForResearchers — Local LLM Blog Pipeline
 
 > Turn any arXiv paper into a polished technical blog post — no API costs, no cloud GPUs, no data leaving your machine.
 
-**RoboLens** is an open-source pipeline that runs a local language model (Google Gemma 4 E4B) to read research papers, extract the key ideas, and publish a well-structured blog post to GitHub Pages — automatically.
+**JarvisForResearchers** is an open-source pipeline that runs a local language model (Google Gemma 4 E4B) to read research papers, extract the key ideas, and publish a well-structured blog post to GitHub Pages — automatically.
 
 It works for **any technical field**: robotics, NLP, computer vision, systems, bioinformatics, etc. Everything is configured through a single `config.yaml` file.
 
@@ -38,8 +38,8 @@ For each paper, the pipeline:
 Click **Fork** on GitHub, then:
 
 ```bash
-git clone git@github.com:<your-username>/robolens.git
-cd robolens
+git clone git@github.com:<your-username>/jarvisforresearchers.git
+cd jarvisforresearchers
 ```
 
 ### Step 2 — Edit `config.yaml`
@@ -50,7 +50,7 @@ Open `config.yaml` in any text editor. The only fields you **must** change:
 blog:
   name: "My ML Blog"               # ← your blog's name
   github_username: "your-username" # ← your GitHub username
-  github_repo: "robolens"          # ← your repo name (matches what you forked)
+  github_repo: "jarvisforresearchers"          # ← your repo name (matches what you forked)
 
 author:
   audience: "machine learning engineers"  # ← who reads your blog
@@ -64,7 +64,7 @@ Open `mkdocs.yml` and change two lines to match your `config.yaml`:
 
 ```yaml
 site_name: My ML Blog                                        # ← matches blog.name
-site_url: https://your-username.github.io/robolens          # ← matches blog.github_username + blog.github_repo
+site_url: https://your-username.github.io/jarvisforresearchers          # ← matches blog.github_username + blog.github_repo
 ```
 
 ### Step 4 — Install dependencies
@@ -105,7 +105,7 @@ If you forked: your repo already exists. If starting fresh:
 
 ```bash
 # Create the repo on GitHub, then add it as remote
-git remote add origin git@github.com:<your-username>/robolens.git
+git remote add origin git@github.com:<your-username>/jarvisforresearchers.git
 git push -u origin main
 ```
 
@@ -242,10 +242,10 @@ All configuration lives in `config.yaml` at the repo root. Here is every option:
 
 | Key | Default | Description |
 |---|---|---|
-| `name` | `"RoboLens"` | Blog name shown in the header and browser tab |
+| `name` | `"JarvisForResearchers"` | Blog name shown in the header and browser tab |
 | `description` | `"..."` | One-sentence tagline on the home page |
 | `github_username` | `""` | Your GitHub username — used to build the live URL |
-| `github_repo` | `"robolens"` | Repository name |
+| `github_repo` | `"jarvisforresearchers"` | Repository name |
 
 ### `llm` — Language model
 
@@ -328,7 +328,7 @@ categories:
 
 | Key | Default | Description |
 |---|---|---|
-| `blog_name` | `"RoboLens"` | Blog name used inside the LLM writing prompt |
+| `blog_name` | `"JarvisForResearchers"` | Blog name used inside the LLM writing prompt |
 | `audience` | `"robotics and AI engineers"` | Reader description — calibrates depth and tone |
 | `max_words` | `1800` | Target word count per post |
 

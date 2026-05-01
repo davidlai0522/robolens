@@ -1,4 +1,4 @@
-name: Deploy RoboLens to GitHub Pages
+name: Deploy JarvisForResearchers to GitHub Pages
 
 on:
   push:

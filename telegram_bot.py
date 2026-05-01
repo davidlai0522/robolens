@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-RoboLens Telegram Bot
+JarvisForResearchers Telegram Bot
 ─────────────────────
 Paste an arXiv link in Telegram → get a full blog post generated and saved.
 
@@ -60,7 +60,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     level=logging.INFO,
 )
-log = logging.getLogger("robolens.bot")
+log = logging.getLogger("jarvisforresearchers.bot")
 
 # ── arXiv ID regex ────────────────────────────────────────────────────────────
 # Matches: 2310.12931  2310.12931v2  arxiv.org/abs/2310.12931  arxiv.org/pdf/...
@@ -188,7 +188,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(_access_denied_text())
         return
     await update.message.reply_html(
-        "👋 <b>Welcome to RoboLens Bot!</b>\n\n"
+        "👋 <b>Welcome to JarvisForResearchers Bot!</b>\n\n"
         "Send me any arXiv link and I'll generate a full blog post for you.\n\n"
         "<b>Examples:</b>\n"
         "• <code>https://arxiv.org/abs/2310.12931</code>\n"
@@ -202,7 +202,7 @@ async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(_access_denied_text())
         return
     await update.message.reply_html(
-        "<b>RoboLens Bot — Help</b>\n\n"
+        "<b>JarvisForResearchers Bot — Help</b>\n\n"
         "<b>Send an arXiv link or ID to generate a blog post.</b>\n\n"
         "<b>Commands:</b>\n"
         "• /start — Welcome message\n"
@@ -307,7 +307,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    log.info("Starting RoboLens Telegram bot (polling mode)…")
+    log.info("Starting JarvisForResearchers Telegram bot (polling mode)…")
     log.info("Allowed users: %s", cfg.telegram.allowed_user_ids or "everyone")
 
     app = ApplicationBuilder().token(token).build()
@@ -318,7 +318,7 @@ def main() -> None:
     app.add_handler(CommandHandler("force", cmd_force))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    print("🤖 RoboLens bot is running. Press Ctrl+C to stop.")
+    print("🤖 JarvisForResearchers bot is running. Press Ctrl+C to stop.")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 

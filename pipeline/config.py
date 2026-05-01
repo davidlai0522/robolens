@@ -1,6 +1,6 @@
 # pipeline/config.py
 """
-Load robolens/config.yaml and expose typed configuration sections.
+Load jarvisforresearchers/config.yaml and expose typed configuration sections.
 
 All pipeline modules should import from here rather than hardcoding values.
 Falls back to sensible defaults if config.yaml is absent.
@@ -26,12 +26,12 @@ def _load_raw() -> dict:
 
 class _Blog:
     def __init__(self, d: dict) -> None:
-        self.name: str = d.get("name", "RoboLens")
+        self.name: str = d.get("name", "JarvisForResearchers")
         self.description: str = d.get(
             "description", "AI research explained locally with Gemma 4"
         )
         self.github_username: str = d.get("github_username", "")
-        self.github_repo: str = d.get("github_repo", "robolens")
+        self.github_repo: str = d.get("github_repo", "jarvisforresearchers")
 
     @property
     def site_url(self) -> str:
@@ -94,7 +94,7 @@ class _Discovery:
 
 class _Author:
     def __init__(self, d: dict) -> None:
-        self.blog_name: str = d.get("blog_name", "RoboLens")
+        self.blog_name: str = d.get("blog_name", "JarvisForResearchers")
         self.audience: str = d.get("audience", "robotics and AI engineers")
         self.max_words: int = int(d.get("max_words", 1800))
 

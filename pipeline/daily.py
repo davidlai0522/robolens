@@ -132,7 +132,7 @@ def list_candidates(n: int = 10) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="RoboLens daily paper picker")
+    parser = argparse.ArgumentParser(description="JarvisForResearchers daily paper picker")
     parser.add_argument(
         "--list",
         metavar="N",

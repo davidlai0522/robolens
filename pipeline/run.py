@@ -92,7 +92,7 @@ def _remove_paper(arxiv_id: str) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RoboLens — LLM-powered robotics & AI research blogger"
+        description="JarvisForResearchers — LLM-powered robotics & AI research blogger"
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--arxiv", metavar="ID", help="arXiv paper ID (e.g. 2310.12931)")

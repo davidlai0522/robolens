@@ -486,6 +486,47 @@ wheels = [
 ]
 
 [[package]]
+name = "jarvisforresearchers"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "accelerate" },
+    { name = "arxiv" },
+    { name = "bitsandbytes" },
+    { name = "fastapi" },
+    { name = "huggingface-hub" },
+    { name = "mkdocs-material" },
+    { name = "pillow" },
+    { name = "pymupdf" },
+    { name = "python-dotenv" },
+    { name = "python-telegram-bot", extra = ["job-queue"] },
+    { name = "pyyaml" },
+    { name = "semanticscholar" },
+    { name = "torch" },
+    { name = "transformers" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "accelerate", specifier = ">=0.27.0" },
+    { name = "arxiv", specifier = "==2.1.0" },
+    { name = "bitsandbytes", specifier = ">=0.43.0" },
+    { name = "fastapi", specifier = ">=0.110.0" },
+    { name = "huggingface-hub", specifier = ">=0.22.0" },
+    { name = "mkdocs-material", specifier = "==9.5.0" },
+    { name = "pillow", specifier = ">=10.0.0" },
+    { name = "pymupdf", specifier = "==1.24.0" },
+    { name = "python-dotenv", specifier = ">=1.0" },
+    { name = "python-telegram-bot", extras = ["job-queue"], specifier = ">=20.0" },
+    { name = "pyyaml", specifier = "==6.0.1" },
+    { name = "semanticscholar", specifier = "==0.8.4" },
+    { name = "torch", specifier = ">=2.2.0" },
+    { name = "transformers", specifier = ">=4.52.0" },
+    { name = "uvicorn", specifier = ">=0.27.0" },
+]
+
+[[package]]
 name = "jinja2"
 version = "3.1.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1616,47 +1657,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c0/8f/0722ca900cc807c13a6a0c696dacf35430f72e0ec571c4275d2371fca3e9/rich-15.0.0.tar.gz", hash = "sha256:edd07a4824c6b40189fb7ac9bc4c52536e9780fbbfbddf6f1e2502c31b068c36", size = 230680, upload-time = "2026-04-12T08:24:00.75Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl", hash = "sha256:33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb", size = 310654, upload-time = "2026-04-12T08:24:02.83Z" },
-]
-
-[[package]]
-name = "robolens"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "accelerate" },
-    { name = "arxiv" },
-    { name = "bitsandbytes" },
-    { name = "fastapi" },
-    { name = "huggingface-hub" },
-    { name = "mkdocs-material" },
-    { name = "pillow" },
-    { name = "pymupdf" },
-    { name = "python-dotenv" },
-    { name = "python-telegram-bot", extra = ["job-queue"] },
-    { name = "pyyaml" },
-    { name = "semanticscholar" },
-    { name = "torch" },
-    { name = "transformers" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "accelerate", specifier = ">=0.27.0" },
-    { name = "arxiv", specifier = "==2.1.0" },
-    { name = "bitsandbytes", specifier = ">=0.43.0" },
-    { name = "fastapi", specifier = ">=0.110.0" },
-    { name = "huggingface-hub", specifier = ">=0.22.0" },
-    { name = "mkdocs-material", specifier = "==9.5.0" },
-    { name = "pillow", specifier = ">=10.0.0" },
-    { name = "pymupdf", specifier = "==1.24.0" },
-    { name = "python-dotenv", specifier = ">=1.0" },
-    { name = "python-telegram-bot", extras = ["job-queue"], specifier = ">=20.0" },
-    { name = "pyyaml", specifier = "==6.0.1" },
-    { name = "semanticscholar", specifier = "==0.8.4" },
-    { name = "torch", specifier = ">=2.2.0" },
-    { name = "transformers", specifier = ">=4.52.0" },
-    { name = "uvicorn", specifier = ">=0.27.0" },
 ]
 
 [[package]]

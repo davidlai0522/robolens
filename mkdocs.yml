@@ -1,6 +1,6 @@
-site_name: RoboLens
+site_name: JarvisForResearchers
 site_description: High-quality robotics & AI research — explained locally with Gemma 4
-site_url: https://davidlai0522.github.io/robolens
+site_url: https://davidlai0522.github.io/jarvisforresearchers
 
 nav:
   - Home: index.md

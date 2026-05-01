@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-RoboLens v1.0 — Local Web UI
+JarvisForResearchers v1.0 — Local Web UI
 
 Launch on the server:
   uv run uvicorn web.app:app --host 0.0.0.0 --port 7860
@@ -32,7 +32,7 @@ _REPO_ROOT = pathlib.Path(__file__).parent.parent
 _VE_PYTHON = _REPO_ROOT / ".venv" / "bin" / "python"
 _RUN_SCRIPT = _REPO_ROOT / "pipeline" / "run.py"
 
-app = FastAPI(title="RoboLens UI")
+app = FastAPI(title="JarvisForResearchers UI")
 
 _STATIC = pathlib.Path(__file__).parent / "static"
 _STATIC.mkdir(exist_ok=True)
