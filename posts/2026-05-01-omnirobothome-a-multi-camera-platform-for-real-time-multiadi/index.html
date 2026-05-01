@@ -6,18 +6,16 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="EUREKA is a novel reward design algorithm powered by coding Large Language Models (LLMs) that autonomously generates human-level reward functions for complex reinforcement learning tasks through evolutionary optimization.
+        <meta name="description" content="OmniRobotHome is a room-scale platform integrating 48 hardware-synchronized RGB cameras and two Franka arms to enable real-time, occlusion-robust multiadic human-robot interaction in a natural home environment.
 ">
       
       
       
-        <link rel="canonical" href="https://davidlai0522.github.io/robolens/posts/2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m/">
+        <link rel="canonical" href="https://davidlai0522.github.io/robolens/posts/2026-05-01-omnirobothome-a-multi-camera-platform-for-real-time-multiadi/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m/">
       
-      
-        <link rel="next" href="../2026-05-01-omnirobothome-a-multi-camera-platform-for-real-time-multiadi/">
       
       
         
@@ -28,7 +26,7 @@
     
     
       
-        <title>Eureka: Human-Level Reward Design via Coding Large Language Models - RoboLens</title>
+        <title>OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction - RoboLens</title>
       
     
     
@@ -111,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Eureka: Human-Level Reward Design via Coding Large Language Models
+              OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction
             
           </span>
         </div>
@@ -370,6 +368,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eureka: Human-Level Reward Design via Coding Large Language Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -387,7 +413,7 @@
   <span class="md-ellipsis">
     
   
-    Eureka: Human-Level Reward Design via Coding Large Language Models
+    OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction
   
 
     
@@ -405,7 +431,7 @@
   <span class="md-ellipsis">
     
   
-    Eureka: Human-Level Reward Design via Coding Large Language Models
+    OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction
   
 
     
@@ -474,10 +500,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#environment-as-context" class="md-nav__link">
+  <a href="#48-hardware-synchronized-rgb-cameras" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Environment as Context
+        48 hardware-synchronized RGB cameras
       
     </span>
   </a>
@@ -485,10 +511,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#evolutionary-search" class="md-nav__link">
+  <a href="#12-edge-nodes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Evolutionary Search
+        12 edge nodes
       
     </span>
   </a>
@@ -496,10 +522,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reward-reflection" class="md-nav__link">
+  <a href="#central-server" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reward Reflection
+        Central server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrated-stereo-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibrated stereo pair
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-franka-research-3-arms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Franka Research 3 arms
       
     </span>
   </a>
@@ -559,34 +607,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../2026-05-01-omnirobothome-a-multi-camera-platform-for-real-time-multiadi/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -662,47 +682,60 @@
 
 
 
-  <h1>Eureka: Human-Level Reward Design via Coding Large Language Models</h1>
+  <h1>OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction</h1>
 
 <h2 id="tldr">TL;DR</h2>
-<p>EUREKA is a novel reward design algorithm powered by coding Large Language Models (LLMs) that autonomously generates human-level reward functions for complex reinforcement learning tasks through evolutionary optimization.</p>
+<p>OmniRobotHome establishes a room-scale platform integrating 48 hardware-synchronized RGB cameras and two Franka arms to enable real-time, occlusion-robust multiadic human-robot interaction in a natural home environment. This is achieved via an end-to-end pipeline that fuses multi-view 3D reconstruction with dedicated stereo vision for object tracking, enabling policies conditioned on long-horizon, room-scale state.</p>
 <h2 id="the-problem">The Problem</h2>
-<p>Harnessing Large Language Models (LLMs) to learn complex low-level manipulation tasks remains an open problem. Concurrently, designing effective reward functions for Reinforcement Learning (RL) is notoriously difficult. Empirical data suggests this difficulty is significant: 92% of polled RL researchers report relying on manual trial-and-error for reward design, and 89% indicate that the rewards they design are sub-optimal.</p>
-<p>Prior efforts have shown limitations. Existing attempts to leverage LLMs for low-level manipulation tasks often necessitate substantial domain expertise to construct appropriate task prompts or are restricted to learning only simple skills. Furthermore, prior work such as L2R (Yu et al., 2023) is constrained by its reliance on templated rewards, lacking the expressivity afforded by EUREKA's free-form generation capabilities. Ultimately, manual reward engineering is a tedious process that frequently yields sub-optimal rewards, leading to undesirable emergent behaviors in the trained policy.</p>
+<p>Real homes necessitate multiadic collaboration, where multiple humans and robots operate concurrently within a shared workspace, executing interleaved subtasks that possess tight spatial and temporal coupling. The primary bottleneck in realizing this capability is the requirement for reliable, real-time 3D tracking amidst persistent occlusion and rapid state changes inherent to unstructured domestic settings.</p>
+<p>The existing literature exhibits several gaps: most prior robotics research assumes constrained environments with localized sensing, failing to model the dynamics of surrounding human motion. Furthermore, computer vision research addressing large-scale human sensing typically targets offline processing or dataset construction, rarely supporting the stringent demands of real-time operation. Consequently, platforms capable of providing the necessary real-time, occlusion-robust perception required to rigorously study multiadic collaboration under close-proximity interaction remain largely unexplored.</p>
 <h2 id="key-contributions">Key Contributions</h2>
-<p>We present three primary contributions. First, EUREKA achieves human-level performance in reward design across a diverse suite of 29 open-sourced RL environments, which encompass 10 distinct robot morphologies. Crucially, it outperforms expert human rewards on 83% of these tasks, achieving an average normalized improvement of 52%. Second, EUREKA successfully solves dexterous manipulation tasks, such as pen spinning, for which manual reward engineering has historically been infeasible. This was demonstrated using a simulated Shadow Hand within a curriculum learning framework. Third, the framework enables a novel gradient-free in-context learning approach to Reinforcement Learning from Human Feedback (RLHF). This approach generates more performant and human-aligned reward functions based on various forms of human input without requiring any underlying model updating.</p>
+<p>We present three key contributions:
+1. A room-scale residential platform featuring 48 hardware-synchronized cameras and two robot arms.
+2. An end-to-end real-time sensing pipeline encompassing perception, data acquisition, and human motion prediction.
+3. Systematic human-robot interaction studies conducted in multiadic residential environments, demonstrating that wide-area sensing, real-time perception, and long-term behavioral modeling each yield measurable gains in safety and assistive performance.</p>
 <h2 id="how-it-works">How It Works</h2>
-<p><img alt="Figure 1: EUREKA generates human-level reward functions across diverse robots and tasks. Combined with
-curriculum learning, EUREKA for the first time, unlocks rapid pen-spinning capabilities on an anthropomorphic
-five-finger hand." src="../../assets/figures/2310.12931/fig_p1_0.jpg" />
-<em>Figure 1: EUREKA generates human-level reward functions across diverse robots and tasks. Combined with
-curriculum learning, EUREKA for the first time, unlocks rapid pen-spinning capabilities on an anthropomorphic
-five-finger hand.</em></p>
-<p><img alt="Figure 2: EUREKA takes unmodified environment source code and language task description as context to
-zero-shot generate executable reward functions from a coding LLM. Then, it iterates between reward sampling,
-GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew" src="../../assets/figures/2310.12931/fig_p2_0.jpg" />
-<em>Figure 2: EUREKA takes unmodified environment source code and language task description as context to
-zero-shot generate executable reward functions from a coding LLM. Then, it iterates between reward sampling,
-GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew</em></p>
-<p><img alt="Figure 3: EUREKA can zero-shot generate executable rewards and then flexibly improve them with many distinct
-types of free-form modification, such as (1) changing the hyperparameter of existing reward components, (2)
-changing the functional form of existing reward components, and (3) introducing new" src="../../assets/figures/2310.12931/fig_p4_0.jpg" />
-<em>Figure 3: EUREKA can zero-shot generate executable rewards and then flexibly improve them with many distinct
-types of free-form modification, such as (1) changing the hyperparameter of existing reward components, (2)
-changing the functional form of existing reward components, and (3) introducing new</em></p>
-<p><img alt="Figure 4: EUREKA outperforms Human and L2R across all tasks. In particular, EUREKA realizes much greater
-gains on high-dimensional dexterity environments." src="../../assets/figures/2310.12931/fig_p6_0.jpg" />
-<em>Figure 4: EUREKA outperforms Human and L2R across all tasks. In particular, EUREKA realizes much greater
-gains on high-dimensional dexterity environments.</em></p>
-<p>EUREKA operates by employing a coding LLM, such as GPT-4, to zero-shot generate executable reward functions. This generation process is conditioned on the raw source code of the target environment, which is provided as context. This initial generation is not the final step; it is followed by an iterative evolutionary search process. In each iteration, reward candidates are sampled, evaluated using GPU-accelerated distributed RL running on IsaacGym, and subsequently refined via a mechanism termed reward reflection. Reward reflection serves to provide automated, textual feedback that summarizes the policy training dynamics. This feedback allows for targeted editing and progressive improvement of the reward code directly within the LLM's context window.</p>
-<h3 id="environment-as-context">Environment as Context</h3>
-<p>This component involves directly feeding the raw source code of the RL environment—specifically excluding the existing reward code—to the LLM. This architectural choice enables the LLM to perform zero-shot generation of executable reward functions tailored precisely to the environment's dynamics and state representation.</p>
-<h3 id="evolutionary-search">Evolutionary Search</h3>
-<p>The evolutionary search mechanism drives the refinement process. It iteratively proposes and refines reward candidates by sampling independent outputs from the LLM. The process incorporates in-context reward mutation, where the best-performing reward from the preceding iteration is used to guide the generation of the next set of candidates.</p>
-<h3 id="reward-reflection">Reward Reflection</h3>
-<p>Reward reflection functions as an automated feedback loop. It summarizes the policy training dynamics into a textual format by tracking scalar values associated with all reward components and the overall task fitness function at various intermediate policy checkpoints during training. This textual summary is then fed back into the LLM context to guide targeted reward code editing.</p>
+<p><img alt="Fig. 1:
+OmniRobotHome is a room-scale platform integrating 48 hardware-
+synchronized RGB cameras for real-time, markerless, occlusion-robust 3D tracking of
+multiple humans and objects with two Franka arms for temporally aligned actuation,
+all in a unified world frame. Continuous capture supports lon" src="../../assets/figures/2604.28197/fig_p1_0.jpg" />
+<em>Fig. 1:
+OmniRobotHome is a room-scale platform integrating 48 hardware-
+synchronized RGB cameras for real-time, markerless, occlusion-robust 3D tracking of
+multiple humans and objects with two Franka arms for temporally aligned actuation,
+all in a unified world frame. Continuous capture supports lon</em></p>
+<p><img alt="Fig. 2: System overview of OmniRobotHome. 48 hardware-synchronized cam-
+eras across 12 edge nodes provide real-time markerless 3D perception of humans, ob-
+jects, and robots in a unified world frame. Details in Sec. 3." src="../../assets/figures/2604.28197/fig_p5_73.jpg" />
+<em>Fig. 2: System overview of OmniRobotHome. 48 hardware-synchronized cam-
+eras across 12 edge nodes provide real-time markerless 3D perception of humans, ob-
+jects, and robots in a unified world frame. Details in Sec. 3.</em></p>
+<p><img alt="Fig. 2: System overview of OmniRobotHome. 48 hardware-synchronized cam-
+eras across 12 edge nodes provide real-time markerless 3D perception of humans, ob-
+jects, and robots in a unified world frame. Details in Sec. 3." src="../../assets/figures/2604.28197/fig_p5_74.jpg" />
+<em>Fig. 2: System overview of OmniRobotHome. 48 hardware-synchronized cam-
+eras across 12 edge nodes provide real-time markerless 3D perception of humans, ob-
+jects, and robots in a unified world frame. Details in Sec. 3.</em></p>
+<p><img alt="Fig. 2: System overview of OmniRobotHome. 48 hardware-synchronized cam-
+eras across 12 edge nodes provide real-time markerless 3D perception of humans, ob-
+jects, and robots in a unified world frame. Details in Sec. 3." src="../../assets/figures/2604.28197/fig_p5_75.jpg" />
+<em>Fig. 2: System overview of OmniRobotHome. 48 hardware-synchronized cam-
+eras across 12 edge nodes provide real-time markerless 3D perception of humans, ob-
+jects, and robots in a unified world frame. Details in Sec. 3.</em></p>
+<p>OmniRobotHome operates by deploying 48 hardware-synchronized RGB cameras across 12 edge nodes to capture a $23.1 \text{ m}^2$ residential space at a rate of $30 \text{ Hz}$. A central server performs 3D whole-body keypoint triangulation using RANSAC-based multi-view reconstruction, while a calibrated stereo pair handles marker-free 6D object pose estimation at $6 \text{ Hz}$. This unified scene state is temporally aligned with the two Franka Research 3 arms. The continuous capture capability facilitates long-horizon human behavior memory, allowing collaboration policies to be conditioned on the live, room-scale 3D state for tasks such as safety-aware coexistence and human-anticipatory assistance.</p>
+<h3 id="48-hardware-synchronized-rgb-cameras">48 hardware-synchronized RGB cameras</h3>
+<p>These cameras are instrumental in instrumenting the $23.1 \text{ m}^2$ residential space, providing the necessary dense visual coverage required to mitigate occlusion effects across the scene.</p>
+<h3 id="12-edge-nodes">12 edge nodes</h3>
+<p>These nodes execute computationally intensive tasks in parallel. Specifically, they run TensorRT-optimized YOLO26 (INT8) for object detection and RTMPose (FP16) for 2D whole-body keypoint estimation.</p>
+<h3 id="central-server">Central server</h3>
+<p>The central server is responsible for fusing the data streams. It triangulates 3D joints via RANSAC-based multi-view reconstruction and applies a One Euro Filter for subsequent temporal smoothing of the reconstructed poses.</p>
+<h3 id="calibrated-stereo-pair">Calibrated stereo pair</h3>
+<p>This dedicated component is utilized for object 6D pose estimation. It provides dense metric depth information via FoundationStereo.</p>
+<h3 id="two-franka-research-3-arms">Two Franka Research 3 arms</h3>
+<p>These arms are deployed to facilitate multi-robot actuation. Their control loops are tightly temporally aligned with the shared perception stream derived from the sensor network.</p>
 <h2 id="results">Results</h2>
-<p>The empirical evaluation demonstrates the efficacy of the EUREKA framework across varied robotic tasks.</p>
+<p>The performance metrics derived from the interaction studies are summarized below:</p>
 <table>
 <thead>
 <tr>
@@ -714,37 +747,43 @@ gains on high-dimensional dexterity environments.</em></p>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Outperformance on Isaac tasks</td>
-<td style="text-align: left;">Exceeds or performs on par to human level</td>
-<td style="text-align: left;">Human</td>
-<td style="text-align: left;">Figure 4</td>
+<td style="text-align: left;">Avg. Cycle [s] (Dynamic Policy)</td>
+<td style="text-align: left;">63.12</td>
+<td style="text-align: left;">Non-aware</td>
+<td style="text-align: left;">Table 1</td>
 </tr>
 <tr>
-<td style="text-align: left;">Outperformance on Dexterity tasks</td>
-<td style="text-align: left;">Outperforms human level on 15 out of 20 tasks</td>
-<td style="text-align: left;">Human</td>
-<td style="text-align: left;">Figure 4</td>
+<td style="text-align: left;">Human Hits (Dynamic Policy)</td>
+<td style="text-align: left;">28.5</td>
+<td style="text-align: left;">Non-aware</td>
+<td style="text-align: left;">Table 1</td>
 </tr>
 <tr>
-<td style="text-align: left;">Average normalized improvement</td>
-<td style="text-align: left;">52%</td>
-<td style="text-align: left;">Human experts</td>
-<td style="text-align: left;">Abstract</td>
+<td style="text-align: left;">Human Hits (Dynamic Policy + Behavior Learning)</td>
+<td style="text-align: left;">21.5</td>
+<td style="text-align: left;">Dynamic</td>
+<td style="text-align: left;">Table 1</td>
+</tr>
+<tr>
+<td style="text-align: left;">Correct placement ratio (%) (LLM at 50% demos)</td>
+<td style="text-align: left;">88.9</td>
+<td style="text-align: left;">Lookup</td>
+<td style="text-align: left;">Table 2</td>
 </tr>
 </tbody>
 </table>
 <h2 id="why-this-matters-for-robotics">Why This Matters for Robotics</h2>
-<p>The ability to autonomously generate high-quality, task-specific reward functions addresses a fundamental bottleneck in applying RL to complex robotic systems. By treating the LLM as a universal reward programming algorithm, EUREKA removes the necessity for extensive, expert-driven reward engineering. This capability is particularly transformative for dexterous manipulation, where defining a precise reward function is often intractable. Furthermore, by enabling a gradient-free RLHF paradigm, EUREKA allows for the incorporation of nuanced human preferences into the reward structure without the computational overhead or stability concerns associated with full model fine-tuning.</p>
+<p>The findings underscore that for complex, multi-agent tasks operating within unstructured environments, the availability of real-time, room-scale 3D perception is the critical enabling factor. Furthermore, integrating long-term behavioral memory into robotic policies allows systems to transition from purely reactive safety protocols to genuinely anticipatory assistance without incurring unacceptable throughput degradation. Fundamentally, the success of tightly coupled, concurrent task execution hinges upon maintaining a unified world frame shared consistently across both the perception stack and the multi-robot actuation layer.</p>
 <h2 id="limitations-open-questions">Limitations &amp; Open Questions</h2>
-<p>Two primary limitations warrant discussion. First, there is a possibility that the initial reward function generated by the LLM may not always be syntactically or semantically executable, even if the LLM's generation appears plausible. Second, the performance of EUREKA exhibits a measurable degradation when GPT-4 is replaced by GPT-3.5, which strongly suggests a dependency on the advanced coding and reasoning capabilities inherent in high-quality, large-scale LLMs. Future work must address robustness against non-executable outputs and explore methods to mitigate the reliance on the largest available proprietary models.</p>
+<p>Two primary limitations were identified. First, the object 6D pose estimation relies entirely on a fully learned pipeline operating on a calibrated stereo pair, as the hardware synchronization required across all 48 streams precludes the use of dedicated, synchronized depth sensors for this task. Second, our analysis of safety-aware coexistence reveals a fundamental safety-throughput tradeoff when employing static radius policies for collision avoidance. Future work must investigate dynamic, context-aware safety margins to decouple this trade-off.</p>
 <hr />
 <h2 id="citation">Citation</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nc">@article</span><span class="p">{</span><span class="nl">231012931</span><span class="p">,</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{Eureka: Human-Level Reward Design via Coding Large Language Models}</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Yecheng Jason Ma and William Liang and Guanzhi Wang and De-An Huang and Osbert Bastani and Dinesh Jayaraman et al.}</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{arXiv preprint arXiv:2310.12931}</span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span><span class="p">,</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{https://arxiv.org/abs/2310.12931}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nc">@article</span><span class="p">{</span><span class="nl">260428197</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction}</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Junyoung Lee and Sookwan Han and Jeonghwan Kim and Inhee Lee and Mingi Choi and Jisoo Kim et al.}</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{arXiv preprint arXiv:2604.28197}</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2026}</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{https://arxiv.org/abs/2604.28197}</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
 </code></pre></div>
 
