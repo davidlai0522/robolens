@@ -1,0 +1,700 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="EUREKA is a novel reward design algorithm powered by coding Large Language Models (LLMs) that autonomously generates human-level reward functions for complex reinforcement learning tasks through evolutionary optimization.
+">
+      
+      
+      
+        <link rel="canonical" href="https://davidlai0522.github.io/robolens/posts/2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.0">
+    
+    
+      
+        <title>Eureka: Human-Level Reward Design via Coding Large Language Models - RoboLens</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.45e1311d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"IBM Plex Sans";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tldr" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="RoboLens" class="md-header__button md-logo" aria-label="RoboLens" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RoboLens
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Eureka: Human-Level Reward Design via Coding Large Language Models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  RoboLens
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="RoboLens" class="md-nav__button md-logo" aria-label="RoboLens" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    RoboLens
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RoboLens
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Posts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Posts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Research Digest
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Eureka: Human-Level Reward Design via Coding Large Language Models
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Eureka: Human-Level Reward Design via Coding Large Language Models
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      TL;DR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Problem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Contributions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How It Works
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment-as-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment as Context
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evolutionary-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evolutionary Search
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reward-reflection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reward Reflection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-matters-for-robotics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why This Matters for Robotics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations &amp; Open Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Citation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">robotics</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">AI</span>
+    
+  
+</nav>
+
+
+
+  <h1>Eureka: Human-Level Reward Design via Coding Large Language Models</h1>
+
+<h2 id="tldr">TL;DR</h2>
+<p>EUREKA is a novel reward design algorithm powered by coding Large Language Models (LLMs) that autonomously generates human-level reward functions for complex reinforcement learning tasks through evolutionary optimization.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>Harnessing Large Language Models (LLMs) to learn complex low-level manipulation tasks remains an open problem. Concurrently, designing effective reward functions for Reinforcement Learning (RL) is notoriously difficult. Empirical data suggests this difficulty is significant: 92% of polled RL researchers report relying on manual trial-and-error for reward design, and 89% indicate that the rewards they design are sub-optimal.</p>
+<p>Prior efforts have shown limitations. Existing attempts to leverage LLMs for low-level manipulation tasks often necessitate substantial domain expertise to construct appropriate task prompts or are restricted to learning only simple skills. Furthermore, prior work such as L2R (Yu et al., 2023) is constrained by its reliance on templated rewards, lacking the expressivity afforded by EUREKA's free-form generation capabilities. Ultimately, manual reward engineering is a tedious process that frequently yields sub-optimal rewards, leading to undesirable emergent behaviors in the trained policy.</p>
+<h2 id="key-contributions">Key Contributions</h2>
+<p>We present three primary contributions. First, EUREKA achieves human-level performance in reward design across a diverse suite of 29 open-sourced RL environments, which encompass 10 distinct robot morphologies. Crucially, it outperforms expert human rewards on 83% of these tasks, achieving an average normalized improvement of 52%. Second, EUREKA successfully solves dexterous manipulation tasks, such as pen spinning, for which manual reward engineering has historically been infeasible. This was demonstrated using a simulated Shadow Hand within a curriculum learning framework. Third, the framework enables a novel gradient-free in-context learning approach to Reinforcement Learning from Human Feedback (RLHF). This approach generates more performant and human-aligned reward functions based on various forms of human input without requiring any underlying model updating.</p>
+<h2 id="how-it-works">How It Works</h2>
+<p><img alt="Figure 1: EUREKA generates human-level reward functions across diverse robots and tasks. Combined with
+curriculum learning, EUREKA for the first time, unlocks rapid pen-spinning capabilities on an anthropomorphic
+five-finger hand." src="../../assets/figures/2310.12931/fig_p1_0.jpg" />
+<em>Figure 1: EUREKA generates human-level reward functions across diverse robots and tasks. Combined with
+curriculum learning, EUREKA for the first time, unlocks rapid pen-spinning capabilities on an anthropomorphic
+five-finger hand.</em></p>
+<p><img alt="Figure 2: EUREKA takes unmodified environment source code and language task description as context to
+zero-shot generate executable reward functions from a coding LLM. Then, it iterates between reward sampling,
+GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew" src="../../assets/figures/2310.12931/fig_p2_0.jpg" />
+<em>Figure 2: EUREKA takes unmodified environment source code and language task description as context to
+zero-shot generate executable reward functions from a coding LLM. Then, it iterates between reward sampling,
+GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew</em></p>
+<p><img alt="Figure 3: EUREKA can zero-shot generate executable rewards and then flexibly improve them with many distinct
+types of free-form modification, such as (1) changing the hyperparameter of existing reward components, (2)
+changing the functional form of existing reward components, and (3) introducing new" src="../../assets/figures/2310.12931/fig_p4_0.jpg" />
+<em>Figure 3: EUREKA can zero-shot generate executable rewards and then flexibly improve them with many distinct
+types of free-form modification, such as (1) changing the hyperparameter of existing reward components, (2)
+changing the functional form of existing reward components, and (3) introducing new</em></p>
+<p><img alt="Figure 4: EUREKA outperforms Human and L2R across all tasks. In particular, EUREKA realizes much greater
+gains on high-dimensional dexterity environments." src="../../assets/figures/2310.12931/fig_p6_0.jpg" />
+<em>Figure 4: EUREKA outperforms Human and L2R across all tasks. In particular, EUREKA realizes much greater
+gains on high-dimensional dexterity environments.</em></p>
+<p>EUREKA operates by employing a coding LLM, such as GPT-4, to zero-shot generate executable reward functions. This generation process is conditioned on the raw source code of the target environment, which is provided as context. This initial generation is not the final step; it is followed by an iterative evolutionary search process. In each iteration, reward candidates are sampled, evaluated using GPU-accelerated distributed RL running on IsaacGym, and subsequently refined via a mechanism termed reward reflection. Reward reflection serves to provide automated, textual feedback that summarizes the policy training dynamics. This feedback allows for targeted editing and progressive improvement of the reward code directly within the LLM's context window.</p>
+<h3 id="environment-as-context">Environment as Context</h3>
+<p>This component involves directly feeding the raw source code of the RL environment—specifically excluding the existing reward code—to the LLM. This architectural choice enables the LLM to perform zero-shot generation of executable reward functions tailored precisely to the environment's dynamics and state representation.</p>
+<h3 id="evolutionary-search">Evolutionary Search</h3>
+<p>The evolutionary search mechanism drives the refinement process. It iteratively proposes and refines reward candidates by sampling independent outputs from the LLM. The process incorporates in-context reward mutation, where the best-performing reward from the preceding iteration is used to guide the generation of the next set of candidates.</p>
+<h3 id="reward-reflection">Reward Reflection</h3>
+<p>Reward reflection functions as an automated feedback loop. It summarizes the policy training dynamics into a textual format by tracking scalar values associated with all reward components and the overall task fitness function at various intermediate policy checkpoints during training. This textual summary is then fed back into the LLM context to guide targeted reward code editing.</p>
+<h2 id="results">Results</h2>
+<p>The empirical evaluation demonstrates the efficacy of the EUREKA framework across varied robotic tasks.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Baseline</th>
+<th style="text-align: left;">Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Outperformance on Isaac tasks</td>
+<td style="text-align: left;">Exceeds or performs on par to human level</td>
+<td style="text-align: left;">Human</td>
+<td style="text-align: left;">Figure 4</td>
+</tr>
+<tr>
+<td style="text-align: left;">Outperformance on Dexterity tasks</td>
+<td style="text-align: left;">Outperforms human level on 15 out of 20 tasks</td>
+<td style="text-align: left;">Human</td>
+<td style="text-align: left;">Figure 4</td>
+</tr>
+<tr>
+<td style="text-align: left;">Average normalized improvement</td>
+<td style="text-align: left;">52%</td>
+<td style="text-align: left;">Human experts</td>
+<td style="text-align: left;">Abstract</td>
+</tr>
+</tbody>
+</table>
+<h2 id="why-this-matters-for-robotics">Why This Matters for Robotics</h2>
+<p>The ability to autonomously generate high-quality, task-specific reward functions addresses a fundamental bottleneck in applying RL to complex robotic systems. By treating the LLM as a universal reward programming algorithm, EUREKA removes the necessity for extensive, expert-driven reward engineering. This capability is particularly transformative for dexterous manipulation, where defining a precise reward function is often intractable. Furthermore, by enabling a gradient-free RLHF paradigm, EUREKA allows for the incorporation of nuanced human preferences into the reward structure without the computational overhead or stability concerns associated with full model fine-tuning.</p>
+<h2 id="limitations-open-questions">Limitations &amp; Open Questions</h2>
+<p>Two primary limitations warrant discussion. First, there is a possibility that the initial reward function generated by the LLM may not always be syntactically or semantically executable, even if the LLM's generation appears plausible. Second, the performance of EUREKA exhibits a measurable degradation when GPT-4 is replaced by GPT-3.5, which strongly suggests a dependency on the advanced coding and reasoning capabilities inherent in high-quality, large-scale LLMs. Future work must address robustness against non-executable outputs and explore methods to mitigate the reliance on the largest available proprietary models.</p>
+<hr />
+<h2 id="citation">Citation</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nc">@article</span><span class="p">{</span><span class="nl">231012931</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{Eureka: Human-Level Reward Design via Coding Large Language Models}</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Yecheng Jason Ma and William Liang and Guanzhi Wang and De-An Huang and Osbert Bastani and Dinesh Jayaraman et al.}</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{arXiv preprint arXiv:2310.12931}</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{https://arxiv.org/abs/2310.12931}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
+</code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.top", "content.code.copy", "search.highlight", "toc.integrate"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
