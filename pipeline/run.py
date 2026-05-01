@@ -7,8 +7,12 @@ Usage:
   python pipeline/run.py --arxiv 2504.01234 --quantise  # 4-bit for low VRAM
   python pipeline/run.py --daily                        # auto-pick today's best paper
   python pipeline/run.py --daily --quantise             # daily + low VRAM
+  python pipeline/run.py --remove 2504.01234            # delete a paper & its figures
 """
 import argparse
+import json
+import shutil
+import subprocess
 import sys
 import pathlib
 
@@ -27,6 +31,63 @@ from daily import pick_daily_paper, mark_processed
 from digest import build_weekly_digest
 
 
+def _remove_paper(arxiv_id: str) -> None:
+    """Delete a paper's post file, figures, processed.json entry, and cache files."""
+    repo_root = pathlib.Path(__file__).parent.parent
+    removed: list[str] = []
+
+    # 1. Find and delete the post file (search by arXiv ID in file content)
+    for post_dir in [repo_root / "docs" / "posts", repo_root / "docs" / "digest" / "posts"]:
+        if not post_dir.exists():
+            continue
+        for post_file in post_dir.glob("*.md"):
+            if arxiv_id in post_file.read_text(encoding="utf-8"):
+                post_file.unlink()
+                removed.append(f"  🗑️  Post:    {post_file.relative_to(repo_root)}")
+
+    # 2. Delete figures directory
+    fig_dir = repo_root / "docs" / "assets" / "figures" / arxiv_id
+    if fig_dir.exists():
+        shutil.rmtree(fig_dir)
+        removed.append(f"  🗑️  Figures: docs/assets/figures/{arxiv_id}/")
+
+    # 3. Remove from processed.json
+    processed_log = repo_root / "cache" / "processed.json"
+    if processed_log.exists():
+        ids: list[str] = json.loads(processed_log.read_text())
+        if arxiv_id in ids:
+            ids.remove(arxiv_id)
+            processed_log.write_text(json.dumps(sorted(ids), indent=2))
+            removed.append(f"  🗑️  processed.json entry removed")
+
+    # 4. Delete cache files (non-destructive to pipeline; can be re-generated)
+    for suffix in ["", "_extraction", "_figures", "_vision"]:
+        for ext in [".json", ".pdf"]:
+            cache_file = repo_root / "cache" / f"{arxiv_id}{suffix}{ext}"
+            if cache_file.exists():
+                cache_file.unlink()
+                removed.append(f"  🗑️  Cache:   cache/{arxiv_id}{suffix}{ext}")
+
+    if not removed:
+        print(f"  ⚠️  Nothing found for ID '{arxiv_id}'. Check the ID and try again.")
+        return
+
+    print(f"\n🗑️  Removed all artifacts for {arxiv_id}:")
+    for line in removed:
+        print(line)
+
+    # 5. Git commit the deletions
+    subprocess.run(["git", "add", "-A", "docs/"], cwd=repo_root, check=False)
+    result = subprocess.run(
+        ["git", "commit", "-m", f"remove: paper {arxiv_id}"],
+        cwd=repo_root, capture_output=True, text=True
+    )
+    if result.returncode == 0:
+        print(f"\n  ✅ Committed. Run 'git push' to update GitHub Pages.")
+    else:
+        print(f"\n  ⚠️  Nothing staged for git commit (docs changes may already be clean).")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="RoboLens — LLM-powered robotics & AI research blogger"
@@ -38,6 +99,8 @@ def main():
                        help="Auto-pick today's best unprocessed paper from arXiv")
     group.add_argument("--digest", action="store_true",
                        help="Build 'This Week in Robotics' multi-paper summary post")
+    group.add_argument("--remove", metavar="ID",
+                       help="Remove a paper by arXiv ID: deletes post, figures, and cache")
     parser.add_argument(
         "--force",
         action="store_true",
@@ -49,6 +112,11 @@ def main():
         help="Load model in 4-bit (for low VRAM / CPU)",
     )
     args = parser.parse_args()
+
+    # --- Remove mode: delete a paper and all its artifacts ---
+    if args.remove:
+        _remove_paper(args.remove)
+        return
 
     # --- Digest mode: weekly multi-paper summary ---
     if args.digest:
