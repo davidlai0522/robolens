@@ -30,21 +30,21 @@ We contribute three primary advancements:
 
 ![Fig. 1: (a) Previous driving world models focus on generative scene evolution prediction. (b) Large language models for driving
 are limited to scene understanding. (c) The proposed framework unifies 3D scene understanding and scene evolution generation
-with the BEV representation. (d) Quantitative c](../../assets/figures/2604.28196/fig_p2_5.jpg)
+with the BEV representation. (d) Quantitative c](../assets/figures/2604.28196/fig_p2_5.jpg)
 *Fig. 1: (a) Previous driving world models focus on generative scene evolution prediction. (b) Large language models for driving
 are limited to scene understanding. (c) The proposed framework unifies 3D scene understanding and scene evolution generation
 with the BEV representation. (d) Quantitative c*
 
 ![Fig. 1: (a) Previous driving world models focus on generative scene evolution prediction. (b) Large language models for driving
 are limited to scene understanding. (c) The proposed framework unifies 3D scene understanding and scene evolution generation
-with the BEV representation. (d) Quantitative c](../../assets/figures/2604.28196/fig_p2_7.jpg)
+with the BEV representation. (d) Quantitative c](../assets/figures/2604.28196/fig_p2_7.jpg)
 *Fig. 1: (a) Previous driving world models focus on generative scene evolution prediction. (b) Large language models for driving
 are limited to scene understanding. (c) The proposed framework unifies 3D scene understanding and scene evolution generation
 with the BEV representation. (d) Quantitative c*
 
 ![Fig. 1: (a) Previous driving world models focus on generative scene evolution prediction. (b) Large language models for driving
 are limited to scene understanding. (c) The proposed framework unifies 3D scene understanding and scene evolution generation
-with the BEV representation. (d) Quantitative c](../../assets/figures/2604.28196/fig_p2_8.jpg)
+with the BEV representation. (d) Quantitative c](../assets/figures/2604.28196/fig_p2_8.jpg)
 *Fig. 1: (a) Previous driving world models focus on generative scene evolution prediction. (b) Large language models for driving
 are limited to scene understanding. (c) The proposed framework unifies 3D scene understanding and scene evolution generation
 with the BEV representation. (d) Quantitative c*

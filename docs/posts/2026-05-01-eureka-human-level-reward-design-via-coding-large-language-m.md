@@ -29,27 +29,27 @@ We present three primary contributions. First, EUREKA achieves human-level perfo
 
 ![Figure 1: EUREKA generates human-level reward functions across diverse robots and tasks. Combined with
 curriculum learning, EUREKA for the first time, unlocks rapid pen-spinning capabilities on an anthropomorphic
-five-finger hand.](../../assets/figures/2310.12931/fig_p1_0.jpg)
+five-finger hand.](../assets/figures/2310.12931/fig_p1_0.jpg)
 *Figure 1: EUREKA generates human-level reward functions across diverse robots and tasks. Combined with
 curriculum learning, EUREKA for the first time, unlocks rapid pen-spinning capabilities on an anthropomorphic
 five-finger hand.*
 
 ![Figure 2: EUREKA takes unmodified environment source code and language task description as context to
 zero-shot generate executable reward functions from a coding LLM. Then, it iterates between reward sampling,
-GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew](../../assets/figures/2310.12931/fig_p2_0.jpg)
+GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew](../assets/figures/2310.12931/fig_p2_0.jpg)
 *Figure 2: EUREKA takes unmodified environment source code and language task description as context to
 zero-shot generate executable reward functions from a coding LLM. Then, it iterates between reward sampling,
 GPU-accelerated reward evaluation, and reward reflection to progressively improve its rew*
 
 ![Figure 3: EUREKA can zero-shot generate executable rewards and then flexibly improve them with many distinct
 types of free-form modification, such as (1) changing the hyperparameter of existing reward components, (2)
-changing the functional form of existing reward components, and (3) introducing new](../../assets/figures/2310.12931/fig_p4_0.jpg)
+changing the functional form of existing reward components, and (3) introducing new](../assets/figures/2310.12931/fig_p4_0.jpg)
 *Figure 3: EUREKA can zero-shot generate executable rewards and then flexibly improve them with many distinct
 types of free-form modification, such as (1) changing the hyperparameter of existing reward components, (2)
 changing the functional form of existing reward components, and (3) introducing new*
 
 ![Figure 4: EUREKA outperforms Human and L2R across all tasks. In particular, EUREKA realizes much greater
-gains on high-dimensional dexterity environments.](../../assets/figures/2310.12931/fig_p6_0.jpg)
+gains on high-dimensional dexterity environments.](../assets/figures/2310.12931/fig_p6_0.jpg)
 *Figure 4: EUREKA outperforms Human and L2R across all tasks. In particular, EUREKA realizes much greater
 gains on high-dimensional dexterity environments.*
 

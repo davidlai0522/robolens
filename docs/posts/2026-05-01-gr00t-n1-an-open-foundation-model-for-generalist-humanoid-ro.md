@@ -31,7 +31,7 @@ We introduce GR00T N1, an open Vision-Language-Action (VLA) foundation model spe
 
 ## How It Works
 
-![Please provide the figure you would like me to analyze.](../../assets/figures/2503.14734/fig_p2_c1.jpg)
+![Please provide the figure you would like me to analyze.](../assets/figures/2503.14734/fig_p2_c1.jpg)
 *Figure 1: Data Pyramid for Robot Foundation Model
 Training. GR00T N1’s heterogeneous training corpora
 can be represented as a pyramid: data quantity de-

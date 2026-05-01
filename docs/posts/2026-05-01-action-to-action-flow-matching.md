@@ -26,7 +26,7 @@ We introduce Action-to-Action Flow Matching (A2A), a novel policy paradigm that 
 
 ## How It Works
 
-![Please provide the figure you would like me to analyze.](../../assets/figures/2602.07322/fig_p2_c1.jpg)
+![Please provide the figure you would like me to analyze.](../assets/figures/2602.07322/fig_p2_c1.jpg)
 *Figure 1 Comparison of robotic policy paradigms. (a) Regression Policy: Deterministic mapping from multi-modal inputs
 to actions. (b) Diffusion Policy: Generative modeling via iterative denoising from Gaussian noise. (c) A2A Policy:
 Informed action generation through a structured flow between histor*

@@ -132,7 +132,7 @@ def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
             pix.save(str(out_dir / fname), jpg_quality=_JPEG_QUALITY)
             captured_rects.append(fig_rect)
             figures.append({
-                "path": f"../../assets/figures/{paper_id}/{fname}",
+                "path": f"../assets/figures/{paper_id}/{fname}",
                 "caption": cap_text,
                 "page": page_num + 1,
                 "figure_number": fig_num,
@@ -169,7 +169,7 @@ def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
                 pix.save(str(out_dir / fname), jpg_quality=_JPEG_QUALITY)
                 captured_rects.append(img_rect)
                 figures.append({
-                    "path": f"../../assets/figures/{paper_id}/{fname}",
+                    "path": f"../assets/figures/{paper_id}/{fname}",
                     "caption": caption,
                     "page": page_num + 1,
                     "figure_number": _parse_fig_num(caption),

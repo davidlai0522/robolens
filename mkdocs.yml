@@ -4,7 +4,13 @@ site_url: https://davidlai0522.github.io/robolens
 
 nav:
   - Home: index.md
-  - Posts: posts/index.md
+  - Research Digest:
+    - Overview: posts/index.md
+    - "HERMES++: Toward a Unified Driving World Model for 3D Scene Understanding and Generation": posts/2026-05-01-hermes-toward-a-unified-driving-world-model-for-3d-scene-und.md
+    - "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots": posts/2026-05-01-gr00t-n1-an-open-foundation-model-for-generalist-humanoid-ro.md
+    - "Generalizable Sparse-View 3D Reconstruction from Unconstrained Images": posts/2026-05-01-generalizable-sparse-view-3d-reconstruction-from-unconstrain.md
+    - "Eureka: Human-Level Reward Design via Coding Large Language Models": posts/2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m.md
+    - "Action-to-Action Flow Matching": posts/2026-05-01-action-to-action-flow-matching.md
   - Weekly Digest: digest/index.md
   - Tags: tags.md
 
@@ -28,17 +34,6 @@ theme:
 
 plugins:
   - search
-  - blog:
-      blog_dir: posts
-      post_date_format: long
-      post_url_format: "{slug}"
-      archive: true
-      archive_name: Archive
-      archive_date_format: "MMMM yyyy"
-      archive_url_format: "archive/{date}"
-      categories: true
-      categories_name: Categories
-      categories_url_format: "category/{slug}"
   - blog:
       blog_dir: digest
       post_date_format: long

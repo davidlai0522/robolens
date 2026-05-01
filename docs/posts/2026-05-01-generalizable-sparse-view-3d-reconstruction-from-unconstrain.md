@@ -26,7 +26,7 @@ We introduce GenWildSplat, a novel feed-forward framework that enables 3D scene 
 
 ## How It Works
 
-![Please provide the figure you would like me to analyze. I will then follow your instructions precisely.](../../assets/figures/2604.28193/fig_p1_c1.jpg)
+![Please provide the figure you would like me to analyze. I will then follow your instructions precisely.](../assets/figures/2604.28193/fig_p1_c1.jpg)
 *Figure 1. GenWildSplat reconstructs 3D scenes from sparse, unposed images with varying illumination and transient objects in a single
 3-second feed-forward pass, and no per-scene optimization is required. Given 2–6 input views, our method predicts novel views under
 target lighting conditions while h*
