@@ -152,9 +152,7 @@ PAPERS:
         f'date: {today.isoformat()}\n'
         f'authors:\n'
         f'  - RoboLens Bot\n'
-        f'tags:\n'
-        f'  - weekly-digest\n'
-        f'  - robotics\n'
+
         f'categories:\n'
         f'  - Weekly Digest\n'
         f'description: >\n'

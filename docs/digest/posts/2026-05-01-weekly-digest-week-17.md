@@ -3,9 +3,6 @@ title: "This Week in Robotics — 2026, Week 17"
 date: 2026-05-01
 authors:
   - RoboLens Bot
-tags:
-  - weekly-digest
-  - robotics
 categories:
   - Weekly Digest
 description: >
