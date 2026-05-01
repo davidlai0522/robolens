@@ -15,8 +15,10 @@ _MIN_HEIGHT = 150
 # Aspect ratio guard — skip banners, rule lines (very wide and short)
 _MAX_ASPECT_RATIO = 8.0
 # Near-uniform colour guard — skip solid background blocks / logos
-# Measures stddev of pixel values; below this = nearly one flat colour
-_MIN_STDDEV = 8.0
+# Measures stddev of pixel values; below this = nearly one flat colour.
+# Real figures (text, lines, charts) reliably exceed 20; subtle gradients
+# and near-blank backgrounds sit around 8–14, so 15 is a safe boundary.
+_MIN_STDDEV = 15.0
 # Minimum fraction of non-white pixels — skip white-background placeholders
 _MIN_CONTENT_RATIO = 0.05
 
