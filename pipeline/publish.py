@@ -20,7 +20,7 @@ def publish(paper: dict, post_content: str):
     slug = re.sub(r"[^a-z0-9]+", "-", paper["title"].lower()).strip("-")[:60]
     date = datetime.date.today().isoformat()
     filename = f"{date}-{slug}.md"
-    dest = pathlib.Path("docs/posts") / filename
+    dest = pathlib.Path("docs/posts/posts") / filename
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists():
