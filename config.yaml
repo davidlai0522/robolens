@@ -128,20 +128,3 @@ author:
 
   # Maximum word count the LLM is asked to stay within per post.
   max_words: 1800
-
-
-# ── Vision figure descriptions (v0.4) ────────────────────────────────────────
-vision:
-  # Use Gemma 4's multimodal capability to describe extracted figures.
-  # When enabled, each selected figure is passed to the model as an image
-  # and Gemma 4 generates a precise technical description. This description
-  # is injected into the authoring prompt so the blog prose can accurately
-  # reference what's in each figure, and it replaces the raw PDF caption as
-  # the image alt text.
-  #
-  # Adds ~15-30s per figure. Set to false to skip (uses PDF caption only).
-  enabled: true
-
-  # Maximum number of figures to describe per paper.
-  # Vision inference is the slowest step — keep this ≤ 4.
-  max_figures: 3

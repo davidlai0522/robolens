@@ -99,12 +99,6 @@ class _Author:
         self.max_words: int = int(d.get("max_words", 1800))
 
 
-class _Vision:
-    def __init__(self, d: dict) -> None:
-        self.enabled: bool = bool(d.get("enabled", True))
-        self.max_figures: int = int(d.get("max_figures", 3))
-
-
 class _Config:
     def __init__(self) -> None:
         raw = _load_raw()
@@ -113,7 +107,6 @@ class _Config:
         self.quality = _Quality(raw.get("quality", {}))
         self.discovery = _Discovery(raw.get("discovery", {}))
         self.author = _Author(raw.get("author", {}))
-        self.vision = _Vision(raw.get("vision", {}))
 
 
 # Module-level singleton — import this everywhere
