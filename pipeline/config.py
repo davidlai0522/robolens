@@ -112,6 +112,13 @@ class _Vision:
         self.max_figures: int = int(d.get("max_figures", 3))
 
 
+class _Telegram:
+    def __init__(self, d: dict) -> None:
+        raw_ids = d.get("allowed_user_ids", [])
+        self.allowed_user_ids: list[int] = [int(uid) for uid in raw_ids if uid]
+        self.notify_with_url: bool = bool(d.get("notify_with_url", True))
+
+
 class _Config:
     def __init__(self) -> None:
         raw = _load_raw()
@@ -122,6 +129,7 @@ class _Config:
         self.author = _Author(raw.get("author", {}))
         self.digest = _Digest(raw.get("digest", {}))
         self.vision = _Vision(raw.get("vision", {}))
+        self.telegram = _Telegram(raw.get("telegram", {}))
 
 
 # Module-level singleton — import this everywhere

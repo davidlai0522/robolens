@@ -8,3 +8,5 @@ semanticscholar==0.8.4
 mkdocs-material==9.5.0
 pyyaml==6.0.1
 huggingface_hub>=0.22.0
+python-telegram-bot[job-queue]>=20.0
+python-dotenv>=1.0

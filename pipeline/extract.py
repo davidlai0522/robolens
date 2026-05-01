@@ -1,6 +1,7 @@
 # pipeline/extract.py
 import json
 import pathlib
+import re
 from llm import ask
 
 
@@ -55,7 +56,11 @@ Paper:
         .removeprefix("```json")
         .removeprefix("```")
         .removesuffix("```")
+        .strip()
     )
+    # Replace invalid JSON escape sequences (e.g. LaTeX \alpha, \text{})
+    # Valid JSON escapes: \", \\, \/, \b, \f, \n, \r, \t, \uXXXX
+    cleaned = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', cleaned)
     result = json.loads(cleaned)
     cache_file.write_text(json.dumps(result, indent=2))
     return result

@@ -153,3 +153,20 @@ vision:
   # Maximum number of figures per paper to describe with Gemma 4's vision encoder.
   # Each image adds one extra LLM call.  3 is a good balance of quality vs. speed.
   max_figures: 3
+
+
+# ── Telegram bot ──────────────────────────────────────────────────────────────
+telegram:
+  # Set TELEGRAM_BOT_TOKEN as an environment variable (in .env or your shell).
+  # Never paste the token here — this file is committed to git.
+
+  # Optional: restrict the bot to specific Telegram user IDs.
+  # Leave as an empty list [] to allow anyone who can message the bot.
+  # Find your user ID by messaging @userinfobot on Telegram.
+  #   allowed_user_ids:
+  #     - 123456789
+  allowed_user_ids: []
+
+  # If true, the bot will reply with the live GitHub Pages URL on success.
+  # If false, it replies with the local file path instead.
+  notify_with_url: true
