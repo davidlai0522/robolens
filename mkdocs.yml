@@ -28,12 +28,19 @@ plugins:
       post_url_format: "{slug}"
       archive: true
       archive_name: Archive
+      archive_date_format: "MMMM yyyy"
       archive_url_format: "archive/{date}"
       categories: true
       categories_name: Categories
       categories_url_format: "category/{slug}"
   - tags:
       tags_file: tags.md
+
+extra_css:
+  - assets/css/blog-filter.css
+
+extra_javascript:
+  - assets/js/blog-filter.js
 
 markdown_extensions:
   - pymdownx.superfences:
