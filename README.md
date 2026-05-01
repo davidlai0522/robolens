@@ -174,6 +174,66 @@ Logs are written to `logs/daily.log`.
 
 ---
 
+## Telegram Bot (optional)
+
+Send an arXiv link from your phone → get a full blog post generated and published automatically.
+
+### Step 1 — Create a Telegram bot
+
+1. Open Telegram and message **[@BotFather](https://t.me/botfather)**
+2. Send `/newbot` and follow the prompts to name your bot
+3. Copy the **bot token** it gives you (looks like `123456789:AAFxxxxxxxx`)
+
+### Step 2 — Set your bot token
+
+> [!IMPORTANT]
+> Never commit your token to git. The `.env` file is already in `.gitignore` — always use it to store secrets.
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` in a text editor and replace the placeholder:
+
+```
+TELEGRAM_BOT_TOKEN=123456789:AAFxxxxxxxx
+```
+
+### Step 3 — (Optional) Restrict to your user ID
+
+By default the bot accepts messages from anyone. To lock it down to just yourself:
+
+1. Message **[@userinfobot](https://t.me/userinfobot)** on Telegram to find your numeric user ID
+2. Add it to `config.yaml`:
+
+```yaml
+telegram:
+  allowed_user_ids:
+    - 123456789   # ← your Telegram user ID
+```
+
+### Step 4 — Run the bot
+
+```bash
+uv run python telegram_bot.py
+```
+
+The bot runs in polling mode — no public server or webhook needed. Keep the terminal open while you want the bot to be active.
+
+### Usage
+
+| What to send | What happens |
+|---|---|
+| `https://arxiv.org/abs/2310.12931` | Run full pipeline (quality gate on) |
+| `2310.12931` | Same — bare arXiv ID also works |
+| `/force 2310.12931` | Skip quality gate |
+| `/status` | Check if a pipeline is currently running |
+| `/help` | Show all commands |
+
+The bot replies immediately to acknowledge your request, then sends the blog post URL once the pipeline finishes (~3–10 min depending on hardware).
+
+---
+
 ## Configuration Reference
 
 All configuration lives in `config.yaml` at the repo root. Here is every option:
