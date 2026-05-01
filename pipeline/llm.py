@@ -139,10 +139,16 @@ def ask_with_image(
     ]}]
 
     try:
-        text = processor.apply_chat_template(
-            messages, add_generation_prompt=True
+        # transformers ≥ 5.x: pass images directly into apply_chat_template
+        # so the processor handles tokenisation + image patching in one step.
+        inputs = processor.apply_chat_template(
+            messages,
+            images=[image],
+            add_generation_prompt=True,
+            tokenize=True,
+            return_tensors="pt",
+            return_dict=True,
         )
-        inputs = processor(text=text, images=[image], return_tensors="pt")
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
 
         with torch.inference_mode():
