@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoboLens</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --teal:     #2dd4bf;
+      --teal-dim: #0f3330;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --red:      #f85149;
+      --green:    #3fb950;
+      --yellow:   #d29922;
+      --mono:     'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 17px; font-weight: 600; color: var(--teal); }
+    header .badge {
+      font-size: 11px;
+      background: var(--teal-dim);
+      color: var(--teal);
+      border: 1px solid var(--teal);
+      border-radius: 10px;
+      padding: 1px 8px;
+    }
+    header .hint { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+    /* ── Layout ───────────────────────────────── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ──────────────────────────────── */
+    .sidebar {
+      width: 270px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .section {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: var(--mono);
+      margin-bottom: 8px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus { border-color: var(--teal); }
+    input[type="text"]::placeholder { color: var(--muted); }
+
+    .options { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 12px;
+      user-select: none;
+    }
+    label:hover { color: var(--text); }
+    input[type="checkbox"] { accent-color: var(--teal); cursor: pointer; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      width: 100%;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: var(--teal); color: #0d1117; margin-bottom: 6px; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.85; }
+    .btn-secondary {
+      background: var(--teal-dim);
+      color: var(--teal);
+      border: 1px solid #1a5c58;
+    }
+    .btn-secondary:hover:not(:disabled) { opacity: 0.85; }
+    .btn-sm {
+      width: auto;
+      padding: 3px 8px;
+      font-size: 11px;
+      border-radius: 4px;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+    .btn-danger { background: transparent; color: var(--red); border: 1px solid transparent; }
+    .btn-danger:hover { border-color: var(--red); }
+
+    /* ── Jobs list ────────────────────────────── */
+    .jobs-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px;
+    }
+    .job-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.1s;
+    }
+    .job-item:hover { background: var(--surface); }
+    .job-item.active { background: var(--teal-dim); border-color: #1a5c58; }
+    .job-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-running { background: var(--yellow); animation: pulse 1.2s ease-in-out infinite; }
+    .dot-done    { background: var(--green); }
+    .dot-failed  { background: var(--red); }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    .job-info { flex: 1; min-width: 0; }
+    .job-label {
+      font-size: 12px;
+      font-family: var(--mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .job-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .job-actions { display: flex; gap: 3px; opacity: 0; transition: opacity 0.1s; }
+    .job-item:hover .job-actions { opacity: 1; }
+
+    /* ── Main ─────────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+    .tab {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+    .panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: none;
+    }
+    .panel.visible { display: block; }
+
+    /* ── Log ──────────────────────────────────── */
+    .log {
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .log-line         { padding: 0; }
+    .log-line.ok      { color: var(--green); }
+    .log-line.err     { color: var(--red); }
+    .log-line.warn    { color: var(--yellow); }
+    .log-line.dim     { color: var(--muted); }
+    .log-line.heading { color: var(--teal); font-weight: 600; }
+
+    /* ── Preview ──────────────────────────────── */
+    .preview { max-width: 780px; }
+    .preview h1,.preview h2,.preview h3 { color: var(--teal); margin: 22px 0 8px; }
+    .preview h2 { border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .preview h3 { color: #93c5d0; }
+    .preview p  { margin-bottom: 12px; line-height: 1.7; color: #c9d1d9; }
+    .preview code {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--teal);
+    }
+    .preview pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+    .preview pre code { background: none; border: none; padding: 0; color: #c9d1d9; }
+    .preview table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    .preview th {
+      background: var(--surface);
+      padding: 8px 12px;
+      text-align: left;
+      border: 1px solid var(--border);
+      color: var(--teal);
+    }
+    .preview td { padding: 8px 12px; border: 1px solid var(--border); color: #c9d1d9; }
+    .preview tr:nth-child(even) td { background: #0f151b; }
+    .preview blockquote {
+      border-left: 3px solid var(--teal);
+      padding: 4px 14px;
+      color: var(--muted);
+      font-style: italic;
+      margin: 12px 0;
+    }
+    .preview ul,.preview ol { padding-left: 22px; margin-bottom: 12px; }
+    .preview li { margin-bottom: 4px; line-height: 1.65; color: #c9d1d9; }
+    .preview img { max-width: 100%; border-radius: 6px; margin: 8px 0; border: 1px solid var(--border); }
+    .preview a { color: var(--teal); }
+    .preview hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+    /* ── Empty state ──────────────────────────── */
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--muted);
+      gap: 10px;
+    }
+    .empty-icon { font-size: 36px; }
+    .empty-text { font-size: 14px; }
+    .empty-hint { font-size: 12px; color: #4d5562; }
+
+    /* ── Scrollbar ────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span>🤖</span>
+  <h1>RoboLens</h1>
+  <span class="badge">v1.0</span>
+  <span class="hint">Local Pipeline UI</span>
+</header>
+
+<div class="layout">
+
+  <!-- ── Sidebar ──────────────────────────── -->
+  <div class="sidebar">
+
+    <div class="section">
+      <div class="section-title">Submit Paper</div>
+      <input type="text" id="arxiv-input" placeholder="arXiv ID — e.g. 2310.12931" />
+      <div class="options">
+        <label><input type="checkbox" id="opt-force">    Skip quality gate <code style="font-size:10px">--force</code></label>
+        <label><input type="checkbox" id="opt-quantise"> 4-bit quantise &nbsp;<code style="font-size:10px">--quantise</code></label>
+        <label><input type="checkbox" id="opt-novision"> Skip vision &emsp;&nbsp;<code style="font-size:10px">--no-vision</code></label>
+      </div>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitPaper()">▶&nbsp; Run Pipeline</button>
+      <button class="btn btn-secondary" onclick="submitDigest()">📰&nbsp; Generate Weekly Digest</button>
+    </div>
+
+    <div class="section" style="padding-bottom:8px; flex-shrink:0">
+      <div class="section-title">Jobs</div>
+    </div>
+
+    <div class="jobs-list" id="jobs-list">
+      <div class="empty" style="padding:24px 0">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">No jobs yet</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Main panel ───────────────────────── -->
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active" id="tab-log"     onclick="switchTab('log')">📋 Log</div>
+      <div class="tab"        id="tab-preview" onclick="switchTab('preview')">📄 Preview</div>
+    </div>
+
+    <div class="panel visible" id="panel-log">
+      <div class="empty" id="log-empty">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Select a job to view its log</div>
+        <div class="empty-hint">Logs stream live while the pipeline runs</div>
+      </div>
+      <div class="log" id="log-output" style="display:none"></div>
+    </div>
+
+    <div class="panel" id="panel-preview">
+      <div class="empty" id="preview-empty">
+        <div class="empty-icon">📄</div>
+        <div class="empty-text">Post preview appears here when the pipeline completes</div>
+        <div class="empty-hint">Click 👁 on a finished job, or switch to this tab after a run</div>
+      </div>
+      <div class="preview" id="preview-content" style="display:none"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let selectedJobId = null;
+  let activeStream  = null;
+
+  // ── Tab switching ────────────────────────────────────────────────────────
+  function switchTab(name) {
+    ['log','preview'].forEach(t => {
+      document.getElementById('tab-'+t).classList.toggle('active', t === name);
+      document.getElementById('panel-'+t).classList.toggle('visible', t === name);
+    });
+    if (name === 'preview' && selectedJobId) loadPreview(selectedJobId);
+  }
+
+  // ── Submit ───────────────────────────────────────────────────────────────
+  async function submitPaper() {
+    const id = document.getElementById('arxiv-input').value.trim();
+    if (!id) { document.getElementById('arxiv-input').focus(); return; }
+    await doSubmit({
+      arxiv_id:  id,
+      force:     document.getElementById('opt-force').checked,
+      quantise:  document.getElementById('opt-quantise').checked,
+      no_vision: document.getElementById('opt-novision').checked,
+      digest:    false,
+    });
+  }
+
+  async function submitDigest() {
+    await doSubmit({
+      arxiv_id: '', force: false,
+      quantise: document.getElementById('opt-quantise').checked,
+      no_vision: false, digest: true,
+    });
+  }
+
+  async function doSubmit(body) {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    try {
+      const res = await fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) { alert('Submit failed: ' + await res.text()); return; }
+      const { job_id } = await res.json();
+      await refreshJobs();
+      selectJob(job_id);
+      switchTab('log');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ── Jobs list ────────────────────────────────────────────────────────────
+  async function refreshJobs() {
+    const res  = await fetch('/jobs');
+    const jobs = await res.json();
+    const list = document.getElementById('jobs-list');
+
+    if (jobs.length === 0) {
+      list.innerHTML = '<div class="empty" style="padding:24px 0"><div class="empty-icon">📭</div><div class="empty-text">No jobs yet</div></div>';
+      return;
+    }
+
+    list.innerHTML = jobs.map(j => {
+      const canPreview = j.status === 'done' && j.post_path;
+      const canRemove  = j.label !== 'Weekly Digest' && j.status !== 'running';
+      return `
+        <div class="job-item ${j.id === selectedJobId ? 'active' : ''}"
+             id="job-${j.id}" onclick="selectJob('${j.id}')">
+          <div class="job-dot dot-${j.status}"></div>
+          <div class="job-info">
+            <div class="job-label">${esc(j.label)}</div>
+            <div class="job-meta">${j.status} · ${j.started_at.slice(11,19)}</div>
+          </div>
+          <div class="job-actions">
+            ${canPreview ? `<button class="btn btn-sm btn-ghost" title="Preview post"
+                onclick="event.stopPropagation();selectJob('${j.id}');switchTab('preview')">👁</button>` : ''}
+            ${canRemove  ? `<button class="btn btn-sm btn-danger" title="Remove paper"
+                onclick="event.stopPropagation();removePaper('${esc(j.label)}','${j.id}')">✕</button>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Select job → stream log ──────────────────────────────────────────────
+  function selectJob(jobId) {
+    selectedJobId = jobId;
+    refreshJobs(); // update active highlight immediately
+
+    if (activeStream) { activeStream.close(); activeStream = null; }
+
+    const logOut   = document.getElementById('log-output');
+    const logEmpty = document.getElementById('log-empty');
+    logEmpty.style.display = 'none';
+    logOut.style.display   = 'block';
+    logOut.innerHTML       = '';
+
+    const es = new EventSource(`/stream/${jobId}`);
+    activeStream = es;
+
+    es.onmessage = (e) => {
+      const data = e.data;
+      if (data.startsWith('__DONE__')) {
+        es.close(); activeStream = null;
+        refreshJobs();
+        if (document.getElementById('tab-preview').classList.contains('active')) {
+          loadPreview(jobId);
+        }
+        return;
+      }
+      const line = document.createElement('div');
+      line.className = 'log-line ' + lineClass(data);
+      line.textContent = data;
+      logOut.appendChild(line);
+      logOut.scrollTop = logOut.scrollHeight;
+    };
+
+    es.onerror = () => { es.close(); activeStream = null; refreshJobs(); };
+  }
+
+  function lineClass(s) {
+    if (/✅|PASSED|Written:|Live at/.test(s))           return 'ok';
+    if (/❌|ERROR|failed|Traceback/.test(s))            return 'err';
+    if (/⚠️|WARNING|REJECTED/.test(s))                  return 'warn';
+    if (/Step \d+\/\d+|Loading|🤖|📄|🖼️|👁️|🧠|📐|✍️|🚀|📰|📅|🗑️/.test(s)) return 'heading';
+    if (/^\s+\(cached\)|^\s+Skipping/.test(s))         return 'dim';
+    return '';
+  }
+
+  // ── Preview ──────────────────────────────────────────────────────────────
+  async function loadPreview(jobId) {
+    const el    = document.getElementById('preview-content');
+    const empty = document.getElementById('preview-empty');
+    const res   = await fetch(`/preview/${jobId}`);
+    if (!res.ok) {
+      empty.style.display = 'flex'; el.style.display = 'none'; return;
+    }
+    const { content } = await res.json();
+    empty.style.display = 'none';
+    el.style.display    = 'block';
+    el.innerHTML        = marked.parse(content);
+    // Scroll preview to top
+    document.getElementById('panel-preview').scrollTop = 0;
+  }
+
+  // ── Remove paper ─────────────────────────────────────────────────────────
+  async function removePaper(arxivId, jobId) {
+    if (!confirm(`Remove paper ${arxivId} and all its files?\nThis cannot be undone.`)) return;
+    const res  = await fetch(`/remove/${encodeURIComponent(arxivId)}`, { method: 'DELETE' });
+    const data = await res.json();
+    alert(data.output || (data.ok ? 'Removed successfully.' : 'Remove failed.'));
+    if (selectedJobId === jobId) {
+      selectedJobId = null;
+      document.getElementById('log-output').style.display  = 'none';
+      document.getElementById('log-empty').style.display   = 'flex';
+      document.getElementById('preview-content').style.display = 'none';
+      document.getElementById('preview-empty').style.display   = 'flex';
+    }
+    await refreshJobs();
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Poll every 2 s to update status dots ─────────────────────────────────
+  setInterval(refreshJobs, 2000);
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  refreshJobs();
+  document.getElementById('arxiv-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitPaper();
+  });
+</script>
+</body>
+</html>
