@@ -22,9 +22,9 @@ theme:
     - navigation.instant
     - navigation.top
     - navigation.indexes
+    - navigation.expand
     - content.code.copy
     - search.highlight
-    - toc.integrate
 
 plugins:
   - search
