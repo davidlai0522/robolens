@@ -1,0 +1,979 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="GenWildSplat is a feed-forward framework that achieves generalizable 3D scene reconstruction from sparse, unposed internet images by integrating appearance adaptation and occlusion modeling without requiring per-scene optimization.
+">
+      
+      
+      
+        <link rel="canonical" href="https://davidlai0522.github.io/robolens/posts/2026-05-01-generalizable-sparse-view-3d-reconstruction-from-unconstrain/">
+      
+      
+        <link rel="prev" href="../2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m/">
+      
+      
+        <link rel="next" href="../2026-05-01-hermes-toward-a-unified-driving-world-model-for-3d-scene-und/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Generalizable Sparse-View 3D Reconstruction from Unconstrained Images - RoboLens</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"IBM Plex Sans";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/css/blog-filter.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tldr" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="RoboLens" class="md-header__button md-logo" aria-label="RoboLens" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RoboLens
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Generalizable Sparse-View 3D Reconstruction from Unconstrained Images
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  RoboLens
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tags/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tags
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="RoboLens" class="md-nav__button md-logo" aria-label="RoboLens" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    RoboLens
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RoboLens
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tags
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Posts
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Posts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05-01-eureka-human-level-reward-design-via-coding-large-language-m/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eureka: Human-Level Reward Design via Coding Large Language Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generalizable Sparse-View 3D Reconstruction from Unconstrained Images
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generalizable Sparse-View 3D Reconstruction from Unconstrained Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-contributions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Contributions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How It Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vggt-transformer-backbone-phi_theta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VGGT transformer backbone $\phi_\theta$
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#depth-head-h_d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depth Head $h_D$
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camera-head-h_c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera Head $h_C$
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gaussian-head-h_textgauss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gaussian Head $h_{\text{gauss}}$
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#light-encoder-textelight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Light Encoder $\text{ELight}$
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#appearance-adapter-textflight-mlp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appearance Adapter ($\text{Flight}$ MLP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#segmentation-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segmentation Network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#differentiable-rasterizer-mathcalr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Differentiable Rasterizer $\mathcal{R}$
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Matters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations &amp; Open Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Citation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05-01-hermes-toward-a-unified-driving-world-model-for-3d-scene-und/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HERMES++: Toward a Unified Driving World Model for 3D Scene Understanding and Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2026-05-01-omnirobothome-a-multi-camera-platform-for-real-time-multiadi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniRobotHome: A Multi-Camera Platform for Real-Time Multiadic Human-Robot Interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+      
+        <a href="../../tags/#tag:computer-vision" class="md-tag">computer-vision</a>
+      
+    
+      
+      
+      
+      
+        <a href="../../tags/#tag:segmentation" class="md-tag">segmentation</a>
+      
+    
+      
+      
+      
+      
+        <a href="../../tags/#tag:transformers" class="md-tag">transformers</a>
+      
+    
+  </nav>
+
+
+
+  <h1>Generalizable Sparse-View 3D Reconstruction from Unconstrained Images</h1>
+
+<h2 id="tldr">TL;DR</h2>
+<p>GenWildSplat introduces a feed-forward framework for generalizable 3D scene reconstruction from sparse, unposed internet images. It achieves this by decoupling geometry from appearance using a canonical representation, integrating an appearance adapter modulated by a light code, and employing explicit occlusion masks derived from a pre-trained segmentation network, entirely bypassing per-scene optimization.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>Reconstructing accurate 3D representations of real-world scenes from a collection of sparse, unposed images presents significant challenges. These difficulties stem from inherent real-world variability, including non-uniform illumination, the presence of transient occlusions, and the inherent ambiguity introduced by limited viewpoint coverage. Existing methodologies frequently necessitate scene-specific optimization routines, often relying on learned appearance embeddings or dynamic masking, which imposes substantial computational overhead and limits generalization across diverse scenes. Furthermore, many feed-forward approaches are brittle, failing when presented with lighting conditions that deviate from those encountered during training.</p>
+<h2 id="key-contributions">Key Contributions</h2>
+<p>We introduce GenWildSplat, a novel feed-forward framework designed for sparse-view outdoor 3D reconstruction that requires no per-scene optimization. A core innovation is the integration of an appearance adapter, which dynamically modulates the appearance of the reconstructed geometry based on a light code estimated for the target image. Additionally, we leverage a pre-trained semantic segmentation network to generate explicit occlusion masks, allowing the model to selectively ignore transient scene elements during the reconstruction process.</p>
+<h2 id="how-it-works">How It Works</h2>
+<p><img alt="A result plot displays the performance metrics (e.g., Accuracy, F1-Score) on the y-axis against different model configurations or training epochs on the x-axis. The plot illustrates the comparative performance of the proposed method against baseline models under various experimental settings. This demonstrates the effectiveness and superiority of the method being investigated." src="../../assets/figures/2604.28193/fig_p1_0.jpg" />
+<em>Figure 1. GenWildSplat reconstructs 3D scenes from sparse, unposed images with varying illumination and transient objects in a single
+3-second feed-forward pass, and no per-scene optimization is required. Given 2–6 input views, our method predicts novel views under
+target lighting conditions while h</em></p>
+<p><img alt="A result plot displays the performance of different models across various metrics. The x-axis represents different experimental configurations or model variants, while the y-axis quantifies the achieved performance score. This plot demonstrates the comparative effectiveness of the proposed method against baseline approaches under different testing conditions." src="../../assets/figures/2604.28193/fig_p1_1.jpg" />
+<em>Figure 1. GenWildSplat reconstructs 3D scenes from sparse, unposed images with varying illumination and transient objects in a single
+3-second feed-forward pass, and no per-scene optimization is required. Given 2–6 input views, our method predicts novel views under
+target lighting conditions while h</em></p>
+<p><img alt="A result plot displays the performance metrics (e.g., Accuracy, F1-Score) on the y-axis against different model configurations or training epochs on the x-axis. The plot illustrates the comparative performance of the proposed method against baseline models under various experimental settings. This demonstrates the efficacy and superiority of the method being investigated." src="../../assets/figures/2604.28193/fig_p1_2.jpg" />
+<em>Figure 1. GenWildSplat reconstructs 3D scenes from sparse, unposed images with varying illumination and transient objects in a single
+3-second feed-forward pass, and no per-scene optimization is required. Given 2–6 input views, our method predicts novel views under
+target lighting conditions while h</em></p>
+<p><img alt="Figure 1. GenWildSplat reconstructs 3D scenes from sparse, unposed images with varying illumination and transient objects in a single
+3-second feed-forward pass, and no per-scene optimization is required. Given 2–6 input views, our method predicts novel views under
+target lighting conditions while h" src="../../assets/figures/2604.28193/fig_p1_3.jpg" />
+<em>Figure 1. GenWildSplat reconstructs 3D scenes from sparse, unposed images with varying illumination and transient objects in a single
+3-second feed-forward pass, and no per-scene optimization is required. Given 2–6 input views, our method predicts novel views under
+target lighting conditions while h</em></p>
+<p>GenWildSplat operates by processing sparse, unposed multi-view images through a VGGT transformer backbone ($\phi_\theta$) to extract rich, multi-view features $\mathbf{F}$. These features are then routed through specialized heads to predict essential scene parameters: per-pixel depth ($\mathbf{D}$), camera parameters ($\mathbf{K}, \mathbf{E}$), and appearance-independent canonical 3D Gaussians ($\mathbf{G}<em l_i="l_i">c$). To handle appearance variation, a Light Encoder ($\text{ELight}$) extracts per-image lighting codes $\mathbf{L}_i$. These codes are then fed into the Appearance Adapter ($\text{Flight}$ MLP), which transforms the canonical Gaussians $\mathbf{G}_c$ into target-lit Gaussians $\mathbf{G}</em>$, ensuring the model focuses on static scene geometry. The entire system is trained using a curriculum learning strategy across three distinct stages.}$. Crucially, a pre-trained Segmentation Network provides binary occlusion masks $\mathbf{M}$, which guide the supervision via a masked reconstruction loss $\mathcal{L</p>
+<h3 id="vggt-transformer-backbone-phi_theta">VGGT transformer backbone $\phi_\theta$</h3>
+<p>This component is responsible for ingesting the set of sparse, unposed images $\mathcal{I}$ and generating a comprehensive set of multi-view features $\mathbf{F} = \phi_\theta (\mathcal{I})$. This backbone serves as the primary feature extractor, providing the rich contextual information necessary for subsequent geometric and photometric predictions.</p>
+<h3 id="depth-head-h_d">Depth Head $h_D$</h3>
+<p>The Depth Head $h_D$ consumes the extracted multi-view features $\mathbf{F}$ to predict the per-view depth maps $\mathbf{D} = h_D (\mathbf{F})$. This provides the initial geometric scaffolding for the 3D reconstruction.</p>
+<h3 id="camera-head-h_c">Camera Head $h_C$</h3>
+<p>The Camera Head $h_C$ utilizes the features $\mathbf{F}$ to estimate the necessary camera parameters, specifically the intrinsic matrix $\mathbf{K}$ and the extrinsic transformation $\mathbf{E}$, from the input image set.</p>
+<h3 id="gaussian-head-h_textgauss">Gaussian Head $h_{\text{gauss}}$</h3>
+<p>This head is tasked with outputting the intrinsic properties of the scene geometry, specifically the appearance-independent Gaussian properties and their corresponding canonical Spherical Harmonic (SH) coefficients $\mathbf{c} \in \mathbb{R}^{75}$. This canonical representation is key to decoupling geometry from view-dependent appearance.</p>
+<h3 id="light-encoder-textelight">Light Encoder $\text{ELight}$</h3>
+<p>$\text{ELight}$ is a 2D CNN-based encoder designed to analyze each input image $I^{(i)}$ independently. It outputs a per-view light code $\mathbf{L}_i = \text{ELight}(I^{(i)})$, which is a 16-dimensional vector characterizing the illumination present in that specific view.</p>
+<h3 id="appearance-adapter-textflight-mlp">Appearance Adapter ($\text{Flight}$ MLP)</h3>
+<p>This MLP acts as the appearance modulation mechanism. It takes the appearance-independent canonical Gaussian $\mathbf{G}<em l_i="l_i">c$ and the estimated light code $\mathbf{L}_i$ as input, producing the target-lit Gaussian $\mathbf{G}</em>_i)$. This allows the model to render the scene under the lighting conditions observed in the input image.} = \text{Flight}(\mathbf{G}_c, \mathbf{L</p>
+<h3 id="segmentation-network">Segmentation Network</h3>
+<p>This component employs a pre-trained network, specifically YOLOv8 Segmentation [13], to analyze the input images. Its function is to detect and classify transient objects, yielding binary occlusion masks $\mathbf{S}$. These masks are critical for directing the supervision signal away from moving or non-static elements.</p>
+<h3 id="differentiable-rasterizer-mathcalr">Differentiable Rasterizer $\mathcal{R}$</h3>
+<p>The Differentiable Rasterizer $\mathcal{R}$ takes the set of transformed, light-adapted Gaussians $\mathbf{G}_{l_i}$ and projects them back into the 2D image plane to reconstruct the rendered image $\hat{I}_j$. This process is differentiable, enabling end-to-end training.</p>
+<h2 id="results">Results</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Baseline</th>
+<th style="text-align: left;">Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Inference Time</td>
+<td style="text-align: left;">3 seconds</td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;">Abstract</td>
+</tr>
+<tr>
+<td style="text-align: left;">Generalization</td>
+<td style="text-align: left;">State-of-the-art feed-forward rendering quality</td>
+<td style="text-align: left;">Existing approaches [16, 36, 54]</td>
+<td style="text-align: left;">Abstract</td>
+</tr>
+</tbody>
+</table>
+<h2 id="why-this-matters">Why This Matters</h2>
+<p>The ability to perform generalizable 3D reconstruction from sparse, unconstrained imagery is a critical bottleneck in many robotics and AR applications. By establishing a feed-forward paradigm that avoids the computational burden of per-scene optimization, GenWildSplat offers a path toward deploying robust 3D scene understanding in real-world, dynamic environments. The decoupling of geometry and appearance, facilitated by the appearance adapter, provides a mechanism for controllable rendering under novel lighting, a significant step beyond static scene representations.</p>
+<h2 id="limitations-open-questions">Limitations &amp; Open Questions</h2>
+<p>The current implementation is not explicitly trained to render novel views or lighting conditions that are entirely outside the distribution of the training data, despite demonstrating strong generalization to unseen views. Furthermore, the training procedure is inherently complex, relying on a curriculum learning strategy to manage the ill-posed nature of simultaneously inferring geometry, illumination, and occlusion from limited, sparse input data.</p>
+<hr />
+<h2 id="citation">Citation</h2>
+<p><strong>Paper:</strong> <a href="https://arxiv.org/abs/2604.28193">2604.28193</a></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nc">@article</span><span class="p">{</span><span class="nl">260428193</span><span class="p">,</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{Generalizable Sparse-View 3D Reconstruction from Unconstrained Images}</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Vinayak Gupta and Chih-Hao Lin and Shenlong Wang and Anand Bhattad and Jia-Bin Huang}</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{arXiv preprint arXiv:2604.28193}</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2026}</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{https://arxiv.org/abs/2604.28193}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
+</code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.instant", "navigation.top", "navigation.indexes", "content.code.copy", "search.highlight", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/js/blog-filter.js"></script>
+      
+    
+  </body>
+</html>
