@@ -1,0 +1,17 @@
+# Intermediate cache files — never commit PDFs or extracted JSON
+cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+
+# MkDocs build output
+site/
+
+# OS
+.DS_Store
+Thumbs.db
