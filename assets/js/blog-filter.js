@@ -1,4 +1,4 @@
-/* RoboLens — client-side keyword + date filter for the blog post listing.
+/* JarvisForResearchers — client-side keyword + date filter for the blog post listing.
  *
  * Injects a filter bar above the post cards on any page that contains
  * MkDocs Material blog articles (.md-post elements).
