@@ -26,4 +26,7 @@ jobs:
         run: pip install mkdocs-material
 
       - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
+        # --force rewrites the gh-pages branch with the built site.
+        # mkdocs gh-deploy already adds .nojekyll to the gh-pages branch,
+        # so Jekyll never runs on the deployed output.
+        run: mkdocs gh-deploy --force --remote-branch gh-pages
