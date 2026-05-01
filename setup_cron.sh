@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup_cron.sh — Install a daily cron job that runs the RoboLens pipeline
+# setup_cron.sh — Install a daily cron job that runs the JarvisForResearchers pipeline
 #
 # The schedule is read from config.yaml (discovery.cron_schedule).
 # Defaults to 08:00 every morning if config.yaml is missing.
@@ -10,7 +10,7 @@
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UV="$HOME/.local/bin/uv"
 LOG_DIR="$REPO_DIR/logs"
-CRON_TAG="# robolens-daily"
+CRON_TAG="# jarvis-for-researchers-daily"
 
 # Read schedule from config.yaml via uv; fall back to default
 CRON_SCHEDULE=$("$UV" run python3 -c \
@@ -21,7 +21,7 @@ CRON_JOB="$CRON_SCHEDULE cd \"$REPO_DIR\" && mkdir -p \"$LOG_DIR\" && \"$UV\" ru
 
 if [[ "$1" == "--remove" ]]; then
     crontab -l 2>/dev/null | grep -v "$CRON_TAG" | crontab -
-    echo "✅ RoboLens daily cron removed."
+    echo "✅ JarvisForResearchers daily cron removed."
     exit 0
 fi
 
