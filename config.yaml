@@ -128,3 +128,18 @@ author:
 
   # Maximum word count the LLM is asked to stay within per post.
   max_words: 1800
+
+
+# ── Weekly digest ─────────────────────────────────────────────────────────────
+digest:
+  # How many days back to look for processed papers to include in the digest.
+  # Default: 7 days (one calendar week).
+  lookback_days: 7
+
+  # Minimum number of papers required before generating a digest.
+  # If fewer papers were processed in the lookback window, the run is skipped.
+  min_papers: 2
+
+  # Title prefix used in the post title and front-matter.
+  # Result: "This Week in Robotics — 2026, Week 18"
+  title_prefix: "This Week in Robotics"

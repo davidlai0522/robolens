@@ -21,9 +21,10 @@ from figures import extract_figures, select_blog_figures
 from extract import extract_key_ideas
 from diagram import maybe_generate_mermaid
 from author import build_blog_post
-from publish import publish
+from publish import publish, publish_digest
 from llm import load_model
 from daily import pick_daily_paper, mark_processed
+from digest import build_weekly_digest
 
 
 def main():
@@ -35,6 +36,8 @@ def main():
     group.add_argument("--pdf", metavar="PATH", help="Path to a local PDF file")
     group.add_argument("--daily", action="store_true",
                        help="Auto-pick today's best unprocessed paper from arXiv")
+    group.add_argument("--digest", action="store_true",
+                       help="Build 'This Week in Robotics' multi-paper summary post")
     parser.add_argument(
         "--force",
         action="store_true",
@@ -46,6 +49,17 @@ def main():
         help="Load model in 4-bit (for low VRAM / CPU)",
     )
     args = parser.parse_args()
+
+    # --- Digest mode: weekly multi-paper summary ---
+    if args.digest:
+        print("\n📰 Digest mode — building 'This Week in Robotics'...")
+        print("\n🤖 Loading Gemma 4 E4B...")
+        tokenizer, model = load_model(quantise=args.quantise)
+        content = build_weekly_digest(tokenizer, model)
+        if content:
+            print("\n🚀 Publishing digest...")
+            publish_digest(content)
+        return
 
     # --- Daily mode: auto-discover paper ---
     if args.daily:

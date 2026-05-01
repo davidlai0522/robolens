@@ -99,6 +99,13 @@ class _Author:
         self.max_words: int = int(d.get("max_words", 1800))
 
 
+class _Digest:
+    def __init__(self, d: dict) -> None:
+        self.lookback_days: int = int(d.get("lookback_days", 7))
+        self.min_papers: int = int(d.get("min_papers", 2))
+        self.title_prefix: str = d.get("title_prefix", "This Week in Robotics")
+
+
 class _Config:
     def __init__(self) -> None:
         raw = _load_raw()
@@ -107,6 +114,7 @@ class _Config:
         self.quality = _Quality(raw.get("quality", {}))
         self.discovery = _Discovery(raw.get("discovery", {}))
         self.author = _Author(raw.get("author", {}))
+        self.digest = _Digest(raw.get("digest", {}))
 
 
 # Module-level singleton — import this everywhere
