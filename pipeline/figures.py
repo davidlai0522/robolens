@@ -41,7 +41,7 @@ def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
 
             figures.append(
                 {
-                    "path": f"/assets/figures/{paper_id}/{fname}",
+                    "path": f"../../assets/figures/{paper_id}/{fname}",
                     "caption": caption,
                     "page": page_num + 1,
                     "figure_number": _parse_fig_num(caption),
