@@ -15,6 +15,7 @@ theme:
     - navigation.tabs
     - navigation.instant
     - navigation.top
+    - navigation.indexes
     - content.code.copy
     - search.highlight
     - toc.integrate
@@ -25,7 +26,14 @@ plugins:
       blog_dir: posts
       post_date_format: long
       post_url_format: "{slug}"
-  - tags
+      archive: true
+      archive_name: Archive
+      archive_url_format: "archive/{date}"
+      categories: true
+      categories_name: Categories
+      categories_url_format: "category/{slug}"
+  - tags:
+      tags_file: tags.md
 
 markdown_extensions:
   - pymdownx.superfences:

@@ -4,6 +4,104 @@ import json
 import re
 from llm import ask
 
+# ── Tag / category helpers ───────────────────────────────────────────────────
+
+_ARXIV_TO_TAGS: dict[str, list[str]] = {
+    "cs.RO": ["robotics"],
+    "cs.AI": ["artificial-intelligence"],
+    "cs.LG": ["machine-learning"],
+    "cs.CV": ["computer-vision"],
+    "cs.CL": ["nlp"],
+    "cs.SY": ["control-systems"],
+    "cs.NE": ["neural-networks"],
+    "eess.SY": ["control-systems"],
+    "cs.MA": ["multi-agent"],
+}
+
+_ARXIV_TO_CATEGORY: dict[str, str] = {
+    "cs.RO": "Robotics",
+    "cs.AI": "Artificial Intelligence",
+    "cs.LG": "Machine Learning",
+    "cs.CV": "Computer Vision",
+    "cs.CL": "NLP",
+    "cs.SY": "Control Systems",
+    "cs.NE": "Neural Networks",
+    "cs.MA": "Multi-Agent Systems",
+}
+
+# Longer phrases first so they take priority over shorter sub-phrases
+_TOPIC_KEYWORDS: list[tuple[str, str]] = [
+    ("reinforcement learning", "reinforcement-learning"),
+    ("reward design", "reward-design"),
+    ("reward function", "reward-design"),
+    ("imitation learning", "imitation-learning"),
+    ("sim-to-real", "sim-to-real"),
+    ("sim to real", "sim-to-real"),
+    ("large language model", "llm"),
+    ("language model", "llm"),
+    ("vision-language", "vision-language"),
+    ("vision language", "vision-language"),
+    ("foundation model", "foundation-models"),
+    ("diffusion model", "diffusion-models"),
+    ("diffusion policy", "diffusion-models"),
+    ("human-robot interaction", "human-robot-interaction"),
+    ("human robot interaction", "human-robot-interaction"),
+    ("dexterous manipulation", "dexterous-manipulation"),
+    ("motion planning", "motion-planning"),
+    ("task planning", "task-planning"),
+    ("pose estimation", "pose-estimation"),
+    ("depth estimation", "depth-estimation"),
+    ("object detection", "object-detection"),
+    ("3d reconstruction", "3d-perception"),
+    ("point cloud", "point-cloud"),
+    ("manipulation", "manipulation"),
+    ("locomotion", "locomotion"),
+    ("grasping", "grasping"),
+    ("navigation", "navigation"),
+    ("planning", "planning"),
+    ("perception", "perception"),
+    ("affordance", "affordance"),
+    ("segmentation", "segmentation"),
+    ("transformer", "transformers"),
+    ("multimodal", "multimodal"),
+    ("multi-modal", "multimodal"),
+    ("humanoid", "humanoid"),
+    ("generalization", "generalization"),
+    ("sim2real", "sim-to-real"),
+    ("slam", "slam"),
+]
+
+
+def _generate_tags(paper: dict, extraction: dict) -> list[str]:
+    """Generate specific tags from arXiv categories and paper content."""
+    tags: list[str] = []
+
+    for cat in paper.get("categories", []):
+        for t in _ARXIV_TO_TAGS.get(cat, []):
+            if t not in tags:
+                tags.append(t)
+
+    search_text = " ".join([
+        extraction.get("one_sentence_summary", ""),
+        extraction.get("problem_statement", ""),
+        " ".join(extraction.get("key_contributions", [])),
+        extraction.get("method_overview", ""),
+    ]).lower()
+
+    for keyword, tag in _TOPIC_KEYWORDS:
+        if keyword in search_text and tag not in tags:
+            tags.append(tag)
+
+    return tags[:8] if tags else ["robotics", "ai-research"]
+
+
+def _infer_category(paper: dict) -> str:
+    """Infer blog category from the paper's primary arXiv category."""
+    for cat in paper.get("categories", []):
+        if cat in _ARXIV_TO_CATEGORY:
+            return _ARXIV_TO_CATEGORY[cat]
+    return "Research Digest"
+
 
 def build_blog_post(
     paper: dict,
@@ -62,16 +160,18 @@ Outline:
     # Front-matter
     slug = _slugify(paper["title"])
     date = datetime.date.today().isoformat()
+    tags = _generate_tags(paper, extraction)
+    category = _infer_category(paper)
+    tags_yaml = "\n".join(f"  - {t}" for t in tags)
     front_matter = f"""---
 title: "{paper['title']}"
 date: {date}
 authors:
   - RoboLens Bot
 tags:
-  - robotics
-  - AI
+{tags_yaml}
 categories:
-  - Research Digest
+  - {category}
 description: >
   {extraction['one_sentence_summary']}
 ---

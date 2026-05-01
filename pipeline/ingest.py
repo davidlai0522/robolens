@@ -31,6 +31,7 @@ def ingest_arxiv(arxiv_id: str) -> dict:
         "pdf_path": str(pdf_path),
         "full_text": full_text,
         "arxiv_url": f"https://arxiv.org/abs/{arxiv_id}",
+        "categories": list(paper.categories),
     }
 
     pathlib.Path(f"cache/{arxiv_id}.json").write_text(json.dumps(data, indent=2))
@@ -67,6 +68,7 @@ def ingest_pdf(pdf_path: str) -> dict:
         "pdf_path": str(pdf_path),
         "full_text": full_text,
         "arxiv_url": "",
+        "categories": [],
     }
 
     pathlib.Path(f"cache/{paper_id}.json").write_text(json.dumps(data, indent=2))

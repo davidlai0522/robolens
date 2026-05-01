@@ -5,6 +5,8 @@ Usage:
   python pipeline/run.py --pdf   ./papers/smolvla.pdf
   python pipeline/run.py --arxiv 2504.01234 --force     # skip quality gate
   python pipeline/run.py --arxiv 2504.01234 --quantise  # 4-bit for low VRAM
+  python pipeline/run.py --daily                        # auto-pick today's best paper
+  python pipeline/run.py --daily --quantise             # daily + low VRAM
 """
 import argparse
 import sys
@@ -21,6 +23,7 @@ from diagram import maybe_generate_mermaid
 from author import build_blog_post
 from publish import publish
 from llm import load_model
+from daily import pick_daily_paper, mark_processed
 
 
 def main():
@@ -30,6 +33,8 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--arxiv", metavar="ID", help="arXiv paper ID (e.g. 2310.12931)")
     group.add_argument("--pdf", metavar="PATH", help="Path to a local PDF file")
+    group.add_argument("--daily", action="store_true",
+                       help="Auto-pick today's best unprocessed paper from arXiv")
     parser.add_argument(
         "--force",
         action="store_true",
@@ -41,6 +46,16 @@ def main():
         help="Load model in 4-bit (for low VRAM / CPU)",
     )
     args = parser.parse_args()
+
+    # --- Daily mode: auto-discover paper ---
+    if args.daily:
+        print("\n📅 Daily mode — searching arXiv for today's best paper...")
+        arxiv_id = pick_daily_paper(verbose=True)
+        if not arxiv_id:
+            print("  Nothing to post today.")
+            return
+        args.arxiv = arxiv_id
+        args.force = False  # quality gate already passed inside pick_daily_paper
 
     # --- Quality gate ---
     if args.arxiv and not args.force:
@@ -74,6 +89,11 @@ def main():
 
     print("🚀 Publishing...")
     publish(paper, post)
+
+    # Record paper as processed so --daily skips it on future runs
+    if paper.get("id"):
+        mark_processed(paper["id"])
+        print(f"  📝 Marked {paper['id']} as processed")
 
 
 if __name__ == "__main__":

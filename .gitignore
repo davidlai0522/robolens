@@ -1,6 +1,9 @@
 # Intermediate cache files — never commit PDFs or extracted JSON
 cache/
 
+# Daily run logs
+logs/
+
 # Python
 __pycache__/
 *.py[cod]
