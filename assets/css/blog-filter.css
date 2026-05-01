@@ -55,6 +55,41 @@
   -webkit-appearance: none;
 }
 
+/* Autocomplete suggestion dropdown */
+#rl-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 200;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.3rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  max-height: 18rem;
+  overflow-y: auto;
+}
+
+#rl-suggestions li {
+  padding: 0.42rem 0.85rem;
+  font-size: 0.82rem;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s;
+}
+
+#rl-suggestions li:hover,
+#rl-suggestions li.rl-suggestion--active {
+  background: var(--md-accent-fg-color--transparent, rgba(0, 150, 136, 0.12));
+  color: var(--md-accent-fg-color);
+}
+
 /* Year dropdown */
 #rl-year {
   padding: 0.38rem 0.6rem;
