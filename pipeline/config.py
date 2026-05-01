@@ -106,6 +106,12 @@ class _Digest:
         self.title_prefix: str = d.get("title_prefix", "This Week in Robotics")
 
 
+class _Vision:
+    def __init__(self, d: dict) -> None:
+        self.enabled: bool = bool(d.get("enabled", True))
+        self.max_figures: int = int(d.get("max_figures", 3))
+
+
 class _Config:
     def __init__(self) -> None:
         raw = _load_raw()
@@ -115,6 +121,7 @@ class _Config:
         self.discovery = _Discovery(raw.get("discovery", {}))
         self.author = _Author(raw.get("author", {}))
         self.digest = _Digest(raw.get("digest", {}))
+        self.vision = _Vision(raw.get("vision", {}))
 
 
 # Module-level singleton — import this everywhere

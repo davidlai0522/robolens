@@ -143,3 +143,13 @@ digest:
   # Title prefix used in the post title and front-matter.
   # Result: "This Week in Robotics — 2026, Week 18"
   title_prefix: "This Week in Robotics"
+
+
+# ── Vision figure descriptions ────────────────────────────────────────────────
+vision:
+  # Set to false to skip vision inference entirely (faster runs, no image analysis).
+  enabled: true
+
+  # Maximum number of figures per paper to describe with Gemma 4's vision encoder.
+  # Each image adds one extra LLM call.  3 is a good balance of quality vs. speed.
+  max_figures: 3

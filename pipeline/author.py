@@ -114,16 +114,24 @@ def build_blog_post(
 ) -> str:
     """Author a full Markdown blog post using Gemma 4."""
 
-    # Build figure Markdown blocks from real extracted images
-    figure_md = "\n\n".join(
-        (
-            f'![{f["caption"] or "Figure from paper"}]({f["path"]})\n'
-            f'*{f["caption"]}*'
-            if f["caption"]
-            else f'![Figure from paper]({f["path"]})'
-        )
-        for f in figures
-    )
+    # Build figure Markdown blocks — use vision description as alt text when available
+    def _fig_block(f: dict) -> str:
+        alt = f.get("description") or f.get("caption") or "Figure from paper"
+        visible = f.get("caption") or f.get("description") or ""
+        img_md = f'![{alt}]({f["path"]})'
+        return f"{img_md}\n*{visible}*" if visible else img_md
+
+    figure_md = "\n\n".join(_fig_block(f) for f in figures)
+
+    # Build a figure context block to help the LLM reference figures accurately
+    fig_context = ""
+    described = [f for f in figures if f.get("description")]
+    if described:
+        lines = ["Figure context (what each figure actually shows):"]
+        for i, f in enumerate(described, 1):
+            cap = f.get("caption") or f"Figure {i}"
+            lines.append(f"  Figure {i} ({cap[:60]}): {f['description']}")
+        fig_context = "\n".join(lines)
 
     prompt = f"""You are writing for {cfg.author.blog_name}, a technical blog for {cfg.author.audience}.
 Tone: precise, clear, never dumbed-down. Write like a good PhD advisor explaining
@@ -147,6 +155,7 @@ Hard rules:
 - Component names must be verbatim from architecture_components
 - Maximum {cfg.author.max_words} words
 - Do not add any references or footnotes
+{fig_context and chr(10) + fig_context}
 
 Outline:
 {json.dumps(extraction, indent=2)}"""

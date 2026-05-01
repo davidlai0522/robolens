@@ -1,7 +1,7 @@
 # pipeline/llm.py
 import os
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoProcessor, AutoModelForCausalLM, BitsAndBytesConfig
 from config import cfg
 
 # Reduce CUDA memory fragmentation — harmless if already set
@@ -20,6 +20,17 @@ def _auto_quantise() -> bool:
     return False
 
 
+def _load_processor(model_id: str):
+    """
+    Load AutoProcessor (handles both text tokens and image patches for Gemma 4).
+    Falls back to AutoTokenizer for text-only models.
+    """
+    try:
+        return AutoProcessor.from_pretrained(model_id)
+    except Exception:
+        return AutoTokenizer.from_pretrained(model_id)
+
+
 def load_model(quantise: bool = False):
     """
     Load Gemma 4 E4B locally.
@@ -29,9 +40,10 @@ def load_model(quantise: bool = False):
 
     If quantise=False but free VRAM is below the threshold, 4-bit is
     enabled automatically to avoid OOM during inference.
+    Returns (processor, model) — processor is a superset of tokenizer.
     """
     model_id = cfg.llm.model_id
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    processor = _load_processor(model_id)
 
     if not quantise:
         quantise = _auto_quantise()
@@ -56,7 +68,7 @@ def load_model(quantise: bool = False):
         )
 
     model.eval()
-    return tokenizer, model
+    return processor, model
 
 
 def ask(
@@ -67,8 +79,8 @@ def ask(
     max_new_tokens: int | None = None,
 ) -> str:
     """
-    Send a single-turn prompt to Gemma 4 and return the response text.
-    Uses the model's chat template automatically.
+    Send a single-turn text prompt to Gemma 4.
+    Works whether `tokenizer` is an AutoProcessor or AutoTokenizer.
     """
     if temperature is None:
         temperature = cfg.llm.temperature
@@ -95,6 +107,55 @@ def ask(
             do_sample=temperature > 0,
         )
 
-    # Decode only the newly generated tokens
     new_tokens = output_ids[0][input_ids.shape[-1]:]
     return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+
+def ask_with_image(
+    prompt: str,
+    image_path: str,
+    processor,
+    model,
+    temperature: float | None = None,
+    max_new_tokens: int = 512,
+) -> str | None:
+    """
+    Send a prompt + image to Gemma 4's vision encoder.
+    Returns the description string, or None on any failure.
+    """
+    try:
+        from PIL import Image
+        image = Image.open(image_path).convert("RGB")
+    except Exception as e:
+        print(f"    ⚠️  Could not load image {image_path}: {e}")
+        return None
+
+    if temperature is None:
+        temperature = cfg.llm.temperature
+
+    messages = [{"role": "user", "content": [
+        {"type": "image"},
+        {"type": "text", "text": prompt},
+    ]}]
+
+    try:
+        text = processor.apply_chat_template(
+            messages, add_generation_prompt=True
+        )
+        inputs = processor(text=text, images=[image], return_tensors="pt")
+        inputs = {k: v.to(model.device) for k, v in inputs.items()}
+
+        with torch.inference_mode():
+            output_ids = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                do_sample=temperature > 0,
+            )
+
+        input_len = inputs["input_ids"].shape[-1]
+        new_tokens = output_ids[0][input_len:]
+        return processor.decode(new_tokens, skip_special_tokens=True).strip()
+    except Exception as e:
+        print(f"    ⚠️  Vision inference failed: {e}")
+        return None
