@@ -3,6 +3,7 @@ import datetime
 import pathlib
 import re
 import subprocess
+from config import cfg
 
 
 def _git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
@@ -33,11 +34,12 @@ def publish(paper: dict, post_content: str):
     print(f"  ✅ Post committed locally.")
 
     if not _has_remote():
+        remote_hint = cfg.blog.remote_url or "git@github.com:<username>/<repo>.git"
         print(
             "\n⚠️  No git remote configured — skipping push.\n"
             "  To publish to GitHub Pages, run once:\n"
             "\n"
-            "    git remote add origin https://github.com/davidlai0522/robolens.git\n"
+            f"    git remote add origin {remote_hint}\n"
             "    git push -u origin main\n"
             "\n"
             "  Then future runs will push automatically.\n"
@@ -46,4 +48,8 @@ def publish(paper: dict, post_content: str):
         return
 
     _git("push")
-    print(f"✅ Live at: https://davidlai0522.github.io/robolens/posts/{slug}/")
+    site = cfg.blog.site_url
+    if site:
+        print(f"✅ Live at: {site}/posts/{slug}/")
+    else:
+        print("✅ Pushed. Check your GitHub Pages URL for the live post.")

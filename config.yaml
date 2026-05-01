@@ -1,0 +1,130 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# RoboLens — User Configuration
+#
+# Edit this file to personalise your blog.  No Python knowledge required.
+# After changing anything here, run:
+#   uv run python pipeline/run.py --arxiv <ID>
+# to see the effect immediately.
+#
+# For GitHub Pages, also update the two matching fields in mkdocs.yml:
+#   site_name  →  blog.name
+#   site_url   →  https://<blog.github_username>.github.io/<blog.github_repo>
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ── Blog identity ─────────────────────────────────────────────────────────────
+blog:
+  # Name shown in the site header and browser tab
+  name: "RoboLens"
+
+  # One-sentence tagline shown on the home page
+  description: "High-quality robotics & AI research — explained locally with Gemma 4"
+
+  # Your GitHub username (used to build the live site URL and git remote)
+  github_username: "davidlai0522"
+
+  # The GitHub repository name you created for this blog
+  github_repo: "robolens"
+  # → Your posts will go live at:
+  #   https://<github_username>.github.io/<github_repo>/
+
+
+# ── LLM settings ─────────────────────────────────────────────────────────────
+llm:
+  # Any HuggingFace causal language model that supports chat templates.
+  # Gemma 4 E4B is the default — 26B MoE model, only 4B active, Apache 2.0.
+  # Alternatives: "google/gemma-3-4b-it", "mistralai/Mistral-7B-Instruct-v0.3"
+  model_id: "google/gemma-4-E4B-it"
+
+  # If free VRAM (in GiB) drops below this value, 4-bit quantisation is
+  # enabled automatically to avoid out-of-memory errors.
+  min_free_vram_gib: 6.0
+
+  # Maximum tokens generated per LLM call (blog authoring uses 3000).
+  max_new_tokens: 2048
+
+  # Sampling temperature.  Lower = more deterministic / factual.
+  # 0.1–0.3 for extraction tasks, 0.3–0.5 for creative writing.
+  temperature: 0.2
+
+
+# ── Paper quality gate ────────────────────────────────────────────────────────
+quality:
+  # Papers accepted at any of these venues always pass the gate.
+  # Add or remove entries to match your field.
+  # (Case-insensitive substring match — "NeurIPS" also matches "NeurIPS 2024")
+  top_venues:
+    # Machine Learning
+    - NeurIPS
+    - ICML
+    - ICLR
+    - AAAI
+    - JMLR
+    # Computer Vision
+    - CVPR
+    - ICCV
+    - ECCV
+    # Robotics
+    - ICRA
+    - IROS
+    - CoRL
+    - RSS
+    - IJRR
+    - T-RO
+    # NLP
+    - ACL
+    - EMNLP
+    - NAACL
+
+  # Minimum citation counts for arXiv preprints based on paper age.
+  # Papers from top venues above bypass these checks entirely.
+  # Set any threshold to 0 to accept all papers of that age.
+  citation_thresholds:
+    age_0: 0      # brand new (this year) — always accept
+    age_1: 5      # ~1 year old — at least 5 citations
+    age_2: 20     # ~2 years old — at least 20 citations
+    age_3_plus: 50  # 3+ years old — at least 50 citations
+
+
+# ── Daily paper discovery ─────────────────────────────────────────────────────
+discovery:
+  # arXiv categories to monitor.  Full taxonomy:
+  # https://arxiv.org/category_taxonomy
+  #
+  # Examples for other fields:
+  #   NLP focus:   cs.CL, cs.AI, cs.LG
+  #   CV focus:    cs.CV, cs.LG, eess.IV
+  #   Systems:     cs.AR, cs.OS, cs.DC
+  #   Bio/Med AI:  cs.LG, q-bio.QM, eess.IV
+  categories:
+    - cs.RO   # Robotics
+    - cs.AI   # Artificial Intelligence
+    - cs.LG   # Machine Learning
+    - cs.CV   # Computer Vision
+
+  # How many recent papers to fetch per category on each daily run.
+  # Higher values = more candidates to evaluate, but slower to start.
+  fetch_per_category: 30
+
+  # When to run the daily pipeline (cron syntax).
+  # Default: 08:00 every morning.
+  # Use https://crontab.guru to build your own schedule.
+  cron_schedule: "0 8 * * *"
+
+
+# ── Writing style ─────────────────────────────────────────────────────────────
+author:
+  # The blog's name as it appears in the LLM authoring prompt.
+  # Change this if you rename your blog.
+  blog_name: "RoboLens"
+
+  # Who is reading this blog?  The LLM uses this to calibrate tone and depth.
+  # Examples:
+  #   "robotics and AI engineers"
+  #   "NLP researchers and ML practitioners"
+  #   "computer vision engineers building production systems"
+  #   "software engineers interested in AI"
+  audience: "robotics and AI engineers"
+
+  # Maximum word count the LLM is asked to stay within per post.
+  max_words: 1800

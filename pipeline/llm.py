@@ -2,14 +2,10 @@
 import os
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
-
-MODEL_ID = "google/gemma-4-E4B-it"
+from config import cfg
 
 # Reduce CUDA memory fragmentation — harmless if already set
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
-
-# Minimum free VRAM (GiB) required to run bf16 inference without OOM
-_MIN_FREE_VRAM_GiB = 6.0
 
 
 def _auto_quantise() -> bool:
@@ -18,7 +14,7 @@ def _auto_quantise() -> bool:
         return True  # CPU path — always quantise
     free_bytes = torch.cuda.mem_get_info()[0]
     free_gib = free_bytes / (1024 ** 3)
-    if free_gib < _MIN_FREE_VRAM_GiB:
+    if free_gib < cfg.llm.min_free_vram_gib:
         print(f"  ⚠️  Only {free_gib:.1f} GiB VRAM free — auto-enabling 4-bit quantisation")
         return True
     return False
@@ -34,7 +30,8 @@ def load_model(quantise: bool = False):
     If quantise=False but free VRAM is below the threshold, 4-bit is
     enabled automatically to avoid OOM during inference.
     """
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+    model_id = cfg.llm.model_id
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
 
     if not quantise:
         quantise = _auto_quantise()
@@ -47,13 +44,13 @@ def load_model(quantise: bool = False):
             bnb_4bit_quant_type="nf4",
         )
         model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID,
+            model_id,
             quantization_config=bnb_config,
             device_map="auto",
         )
     else:
         model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID,
+            model_id,
             torch_dtype=torch.bfloat16,
             device_map="auto",
         )
@@ -66,13 +63,18 @@ def ask(
     prompt: str,
     tokenizer,
     model,
-    temperature: float = 0.2,
-    max_new_tokens: int = 2048,
+    temperature: float | None = None,
+    max_new_tokens: int | None = None,
 ) -> str:
     """
     Send a single-turn prompt to Gemma 4 and return the response text.
     Uses the model's chat template automatically.
     """
+    if temperature is None:
+        temperature = cfg.llm.temperature
+    if max_new_tokens is None:
+        max_new_tokens = cfg.llm.max_new_tokens
+
     messages = [{"role": "user", "content": prompt}]
     inputs = tokenizer.apply_chat_template(
         messages,

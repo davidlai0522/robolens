@@ -18,20 +18,18 @@ import time
 import sys
 
 import arxiv
-
-# arXiv categories to monitor
-_CATEGORIES = [
-    "cs.RO",   # Robotics
-    "cs.AI",   # Artificial Intelligence
-    "cs.LG",   # Machine Learning
-    "cs.CV",   # Computer Vision
-]
-
-# How many recent papers to fetch per category
-_FETCH_PER_CATEGORY = 30
+from config import cfg
 
 # Where processed paper IDs are recorded
 _PROCESSED_LOG = pathlib.Path("cache/processed.json")
+
+
+def _categories() -> list[str]:
+    return cfg.discovery.categories
+
+
+def _fetch_per_category() -> int:
+    return cfg.discovery.fetch_per_category
 
 
 def _load_processed() -> set[str]:
@@ -48,13 +46,15 @@ def mark_processed(arxiv_id: str) -> None:
     _PROCESSED_LOG.write_text(json.dumps(sorted(processed), indent=2))
 
 
-def _fetch_recent(max_results: int = _FETCH_PER_CATEGORY) -> list[arxiv.Result]:
+def _fetch_recent(max_results: int | None = None) -> list[arxiv.Result]:
     """Fetch recent papers from all monitored categories, deduplicated."""
+    if max_results is None:
+        max_results = _fetch_per_category()
     client = arxiv.Client()
     seen_ids: set[str] = set()
     results: list[arxiv.Result] = []
 
-    for cat in _CATEGORIES:
+    for cat in _categories():
         query = f"cat:{cat}"
         search = arxiv.Search(
             query=query,
@@ -86,7 +86,7 @@ def pick_daily_paper(verbose: bool = False) -> str | None:
     candidates = _fetch_recent()
 
     if verbose:
-        print(f"  Fetched {len(candidates)} candidate papers across {_CATEGORIES}")
+        print(f"  Fetched {len(candidates)} candidate papers across {_categories()}")
 
     for paper in candidates:
         arxiv_id = paper.get_short_id().split("v")[0]

@@ -4,6 +4,7 @@ import json
 import pathlib
 import time
 import requests
+from config import cfg
 
 # Direct S2 REST endpoint — much faster than the Python client wrapper
 _S2_URL = "https://api.semanticscholar.org/graph/v1/paper/ARXIV:{arxiv_id}"
@@ -17,16 +18,8 @@ _S2_BACKOFF_CAP = 60.0
 _CACHE_DIR = pathlib.Path("cache/quality")
 
 
-TOP_VENUES = {
-    # Machine Learning
-    "NeurIPS", "ICML", "ICLR", "AAAI", "JMLR",
-    # Computer Vision
-    "CVPR", "ICCV", "ECCV",
-    # Robotics
-    "ICRA", "IROS", "CoRL", "RSS", "IJRR", "T-RO",
-    # NLP
-    "ACL", "EMNLP", "NAACL",
-}
+# Loaded from config.yaml — edit top_venues there, not here
+TOP_VENUES = cfg.quality.top_venues
 
 
 def check_quality(arxiv_id: str, allow_skip: bool = True) -> dict:
@@ -139,18 +132,8 @@ def _fetch_s2(arxiv_id: str) -> tuple[dict | None, str]:
 
 
 def _citation_threshold(year: int) -> int:
-    """
-    Newer papers haven't had time to accumulate citations.
-    Use age-adjusted thresholds to avoid rejecting good recent work.
-    """
-    age = datetime.date.today().year - year
-    if age == 0:
-        return 0   # Brand new — skip citation check
-    if age == 1:
-        return 5   # ~1 year old: at least 5 citations
-    if age == 2:
-        return 20  # ~2 years old: at least 20 citations
-    return 50      # Older: at least 50 citations
+    """Delegate to the config-driven threshold table."""
+    return cfg.quality.citation_threshold(year)
 
 
 def _normalise_venue(venue: str) -> str:
