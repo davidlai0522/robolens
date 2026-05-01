@@ -86,6 +86,7 @@ description: >
     arxiv_url = paper.get("arxiv_url", "")
     paper_id_safe = paper["id"].replace(".", "")
     citation = f"""
+
 ---
 
 ## Citation
