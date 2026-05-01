@@ -2,6 +2,12 @@ site_name: RoboLens
 site_description: High-quality robotics & AI research — explained locally with Gemma 4
 site_url: https://davidlai0522.github.io/robolens
 
+nav:
+  - Home: index.md
+  - Posts: posts/index.md
+  - Weekly Digest: digest/index.md
+  - Tags: tags.md
+
 theme:
   name: material
   palette:
