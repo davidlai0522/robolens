@@ -82,17 +82,76 @@ def _rects_overlap(a: fitz.Rect, b: fitz.Rect) -> bool:
     return not a.intersect(b).is_empty
 
 
+def _merge_rects(rects: list[fitz.Rect], gap: float = 8.0) -> list[fitz.Rect]:
+    """Merge rectangles that overlap or are within *gap* points of each other."""
+    if not rects:
+        return []
+    sorted_rects = sorted(rects, key=lambda r: (r.y0, r.x0))
+    merged = [fitz.Rect(sorted_rects[0])]
+    for r in sorted_rects[1:]:
+        last = merged[-1]
+        expanded = fitz.Rect(last.x0 - gap, last.y0 - gap, last.x1 + gap, last.y1 + gap)
+        if not expanded.intersect(r).is_empty:
+            merged[-1] = last | r  # union
+        else:
+            merged.append(fitz.Rect(r))
+    return merged
+
+
+def _drawing_clusters(page: fitz.Page, min_area: float = 800.0) -> list[fitz.Rect]:
+    """Return merged bounding boxes of vector-path groups on the page.
+    Ignores tiny decorative paths (rules, borders, tick marks) by area.
+    """
+    rects = []
+    for d in page.get_drawings():
+        r = d.get("rect")
+        if r:
+            rect = fitz.Rect(r)
+            if not rect.is_empty and rect.width * rect.height >= min_area:
+                rects.append(rect)
+    return _merge_rects(rects, gap=8.0)
+
+
+def _nearest_source_above(
+    cap_rect: fitz.Rect,
+    clusters: list[fitz.Rect],
+    raster_rects: list[fitz.Rect],
+    max_gap: float = 500.0,
+) -> fitz.Rect | None:
+    """Return the drawing cluster or raster rect that sits closest above *cap_rect*
+    and has horizontal overlap with it.  Returns None if nothing is within *max_gap*.
+    """
+    best: fitz.Rect | None = None
+    best_gap = max_gap
+
+    def h_overlap(a: fitz.Rect, b: fitz.Rect) -> bool:
+        return a.x0 < b.x1 and a.x1 > b.x0
+
+    for r in clusters + raster_rects:
+        if r.y1 > cap_rect.y0:  # must end above caption top
+            continue
+        gap = cap_rect.y0 - r.y1
+        if gap < best_gap and h_overlap(r, cap_rect):
+            best = r
+            best_gap = gap
+    return best
+
+
 def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
     """
-    Extract figures from the PDF using two complementary strategies:
+    Extract figures from the PDF using a three-source merge strategy:
 
-    1. Caption-driven region rendering — finds every "Figure N" caption, then
-       renders the page region above it.  This captures architectural diagrams
-       and other vector figures that don't exist as embedded raster objects.
+    For each "Figure N" caption, the figure region is determined by finding
+    the nearest drawing cluster (vector paths from ``page.get_drawings()``) or
+    raster image rect above the caption.  This gives a tight, accurate crop
+    for both vector diagrams and embedded photos, and handles multi-column
+    layouts far better than a fixed vertical lookback.
 
-    2. Raster image rendering — for raster images not already covered by a
-       caption, renders the image's bounding box through MuPDF's pipeline
-       (correct colorspace, masks, transforms) rather than extracting raw bytes.
+    If no source is found within ``_CAPTION_LOOKBACK_PT``, the strategy falls
+    back to rendering the blind region above the caption (original behaviour).
+
+    Uncaptioned raster images that were not claimed by any caption are rendered
+    as a final fallback pass.
     """
     cache_file = pathlib.Path(f"cache/{paper_id}_figures.json")
     if cache_file.exists():
@@ -104,17 +163,47 @@ def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
     out_dir.mkdir(parents=True, exist_ok=True)
     figures: list[dict] = []
     skipped = 0
-    captured_rects: list[fitz.Rect] = []  # track regions already saved
+    captured_rects: list[fitz.Rect] = []
 
     for page_num, page in enumerate(doc):
         pr = page.rect
         captions = _captions_on_page(page)
 
-        # ── Strategy 1: caption-driven region rendering ──────────────────────
+        # Build vector drawing clusters for this page
+        clusters = _drawing_clusters(page)
+
+        # Build raster image rects for this page (reused in both passes)
+        raster_rects: list[fitz.Rect] = []
+        xref_to_rects: dict[int, list[fitz.Rect]] = {}
+        for img in page.get_images(full=True):
+            xref = img[0]
+            try:
+                rs = [r for r in page.get_image_rects(xref)
+                      if not r.is_empty
+                      and r.width >= _MIN_WIDTH
+                      and r.height >= _MIN_HEIGHT]
+            except Exception:
+                rs = []
+            if rs:
+                xref_to_rects[xref] = rs
+                raster_rects.extend(rs)
+
+        # ── Strategy 1: caption-driven (three-source) ────────────────────────
         for cap_rect, cap_text in captions:
-            # Region above the caption (where the figure body lives)
-            top = max(pr.y0, cap_rect.y0 - _CAPTION_LOOKBACK_PT)
-            fig_rect = fitz.Rect(pr.x0 + 20, top, pr.x1 - 20, cap_rect.y0 - 2)
+            source = _nearest_source_above(cap_rect, clusters, raster_rects)
+
+            if source is not None:
+                # Tight crop: use the actual source bounds, clipped to page
+                fig_rect = fitz.Rect(
+                    max(pr.x0 + 5, source.x0 - 5),
+                    max(pr.y0,     source.y0 - 5),
+                    min(pr.x1 - 5, source.x1 + 5),
+                    cap_rect.y0 - 2,
+                )
+            else:
+                # Fallback: fixed-height blind region above caption
+                top = max(pr.y0, cap_rect.y0 - _CAPTION_LOOKBACK_PT)
+                fig_rect = fitz.Rect(pr.x0 + 20, top, pr.x1 - 20, cap_rect.y0 - 2)
 
             if fig_rect.is_empty or fig_rect.height < 80:
                 continue
@@ -138,19 +227,9 @@ def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
                 "figure_number": fig_num,
             })
 
-        # ── Strategy 2: raster images not yet captured ───────────────────────
-        for img in page.get_images(full=True):
-            xref = img[0]
-            try:
-                img_rects = page.get_image_rects(xref)
-            except Exception:
-                continue
-
+        # ── Strategy 2: uncaptioned rasters not yet captured ─────────────────
+        for xref, img_rects in xref_to_rects.items():
             for img_rect in img_rects:
-                if img_rect.is_empty:
-                    continue
-                if img_rect.width < _MIN_WIDTH or img_rect.height < _MIN_HEIGHT:
-                    continue
                 if any(_rects_overlap(img_rect, seen) for seen in captured_rects):
                     continue
 
@@ -160,9 +239,9 @@ def extract_figures(paper_id: str, pdf_path: str) -> list[dict]:
                     skipped += 1
                     continue
 
-                # Attach a nearby caption if one exists just below this image
+                # Wider proximity threshold (90pt) for dense papers
                 caption = next(
-                    (t for r, t in captions if 0 <= r.y0 - img_rect.y1 < 60),
+                    (t for r, t in captions if 0 <= r.y0 - img_rect.y1 < 90),
                     "",
                 )
                 fname = f"fig_p{page_num + 1}_r{xref}.jpg"
