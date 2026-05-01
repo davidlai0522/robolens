@@ -26,6 +26,29 @@
     });
     const sortedYears = Array.from(years).sort().reverse();
 
+    // ── Build suggestion corpus from article titles + excerpt paper names ────
+    const suggestionSet = new Set();
+    articles.forEach((a) => {
+      // Digest title
+      const heading = a.querySelector("h2, h3");
+      if (heading) suggestionSet.add(heading.textContent.trim());
+
+      // Paper names mentioned in the excerpt (comma-separated after "papers this week:")
+      const excerpt = a.querySelector(".md-post__excerpt")?.textContent ?? "";
+      const afterColon = excerpt.replace(/^\d+\s+papers?\s+this\s+week\s*:\s*/i, "");
+      afterColon.split(/,\s*/).forEach((phrase) => {
+        const trimmed = phrase.replace(/\.$/, "").trim();
+        if (trimmed.length >= 8) suggestionSet.add(trimmed);
+      });
+
+      // Tags
+      a.querySelectorAll(".md-tag").forEach((el) => {
+        const t = el.textContent.trim();
+        if (t.length >= 3) suggestionSet.add(t);
+      });
+    });
+    const allSuggestions = Array.from(suggestionSet);
+
     // ── Build filter bar ─────────────────────────────────────────────────────
     const bar = document.createElement("div");
     bar.id = "rl-filter-bar";
@@ -41,7 +64,12 @@
           placeholder="Search posts…"
           autocomplete="off"
           aria-label="Search posts by keyword"
+          aria-autocomplete="list"
+          aria-controls="rl-suggestions"
+          aria-expanded="false"
+          role="combobox"
         />
+        <ul id="rl-suggestions" role="listbox" aria-label="Suggestions" hidden></ul>
       </div>
       <select id="rl-year" aria-label="Filter by year" title="Filter by year">
         <option value="">All years</option>
@@ -53,6 +81,10 @@
     // Insert before the first post, inside its parent container
     const container = articles[0].parentElement;
     container.insertBefore(bar, articles[0]);
+
+    const searchInput   = document.getElementById("rl-search");
+    const suggestList   = document.getElementById("rl-suggestions");
+    let activeIndex     = -1;
 
     // ── Helpers ──────────────────────────────────────────────────────────────
     function postText(article) {
@@ -69,9 +101,57 @@
       return t ? (t.getAttribute("datetime") ?? "").slice(0, 4) : "";
     }
 
+    // ── Autocomplete helpers ──────────────────────────────────────────────────
+    function closeSuggestions() {
+      suggestList.hidden = true;
+      suggestList.innerHTML = "";
+      activeIndex = -1;
+      searchInput.setAttribute("aria-expanded", "false");
+    }
+
+    function selectSuggestion(text) {
+      searchInput.value = text;
+      closeSuggestions();
+      applyFilter();
+    }
+
+    function openSuggestions(matches) {
+      suggestList.innerHTML = "";
+      activeIndex = -1;
+      if (!matches.length) { closeSuggestions(); return; }
+      matches.forEach((text, i) => {
+        const li = document.createElement("li");
+        li.id = `rl-suggestion-${i}`;
+        li.setAttribute("role", "option");
+        li.setAttribute("aria-selected", "false");
+        li.textContent = text;
+        li.addEventListener("mousedown", (e) => {
+          e.preventDefault(); // keep focus on input
+          selectSuggestion(text);
+        });
+        suggestList.appendChild(li);
+      });
+      suggestList.hidden = false;
+      searchInput.setAttribute("aria-expanded", "true");
+    }
+
+    function setActive(index) {
+      const items = suggestList.querySelectorAll("li");
+      items.forEach((li, i) => {
+        li.setAttribute("aria-selected", i === index ? "true" : "false");
+        li.classList.toggle("rl-suggestion--active", i === index);
+      });
+      activeIndex = index;
+      if (index >= 0 && items[index]) {
+        searchInput.setAttribute("aria-activedescendant", items[index].id);
+      } else {
+        searchInput.removeAttribute("aria-activedescendant");
+      }
+    }
+
     // ── Filter function ──────────────────────────────────────────────────────
     function applyFilter() {
-      const query = document.getElementById("rl-search").value.trim().toLowerCase();
+      const query = searchInput.value.trim().toLowerCase();
       const year  = document.getElementById("rl-year").value;
       let shown   = 0;
 
@@ -91,7 +171,38 @@
     }
 
     // ── Wire events ──────────────────────────────────────────────────────────
-    document.getElementById("rl-search").addEventListener("input", applyFilter);
+    searchInput.addEventListener("input", function () {
+      applyFilter();
+      const q = this.value.trim().toLowerCase();
+      if (q.length < 1) { closeSuggestions(); return; }
+      const matches = allSuggestions
+        .filter((s) => s.toLowerCase().includes(q))
+        .slice(0, 8);
+      openSuggestions(matches);
+    });
+
+    searchInput.addEventListener("keydown", function (e) {
+      const items = suggestList.querySelectorAll("li");
+      if (suggestList.hidden || !items.length) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActive(Math.min(activeIndex + 1, items.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActive(Math.max(activeIndex - 1, -1));
+      } else if (e.key === "Enter" && activeIndex >= 0) {
+        e.preventDefault();
+        selectSuggestion(items[activeIndex].textContent);
+      } else if (e.key === "Escape") {
+        closeSuggestions();
+      }
+    });
+
+    searchInput.addEventListener("blur", function () {
+      // Small delay so mousedown on a suggestion fires first
+      setTimeout(closeSuggestions, 150);
+    });
+
     document.getElementById("rl-year").addEventListener("change", applyFilter);
   }
 
